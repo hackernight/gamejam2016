@@ -7,7 +7,7 @@ var BOTTOM_TOOTH_Y = getGridPixel(7);
 var FLIPPED=-1,STANDARD=1;
 var DECAY_TIME = 35000;
 
-var game = new Phaser.Game(896, 640, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(896, 640, Phaser.AUTO, 'game', { preload: preload, create: create, update: update });
 var Teeth, downGums, upGums;
 var mouse;
 var toothTimers = [];
@@ -127,8 +127,8 @@ function updateToothSprite(sprite) {
 
 
 function updateToothbrushPosition(){
-  toothbrush.position.x = game.input.x - (TILE_SIZE / 2);
-  toothbrush.position.y = game.input.y - (TILE_SIZE / 2);
+  toothbrush.position.x = game.input.x - (TILE_SIZE / 4);
+  toothbrush.position.y = game.input.y - (TILE_SIZE / 4);
 }
 
 function cleanTooth(){
