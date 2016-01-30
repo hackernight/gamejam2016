@@ -1,9 +1,12 @@
 var CLEAN=0, DIRTY=1, DIRTIER=2, DIRTIEST=3;
-var BRUSHES_PER_STAGE = 50;
+var BRUSHES_PER_STAGE = 5;
 var ID = 0;
 function toothFactory(){
   var tooth = {};
-  tooth.state = DIRTIEST;
+  //tooth.state = DIRTIEST;
+
+  //initializes a random state between clean and dirtiest
+  tooth.state = Math.floor(Math.random() * 3);
   tooth.id = ID++;
   tooth.brushes = 0;
   tooth.brush = function(){
@@ -32,6 +35,5 @@ function dirtyTransition(state){
   if (state == DIRTIEST) {
     return DIRTIEST;
   }
-  console.log('HAHA I\'M GETTING DIRTIER!!!', state);
   return state + 1;
 }

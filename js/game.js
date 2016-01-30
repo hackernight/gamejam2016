@@ -5,9 +5,9 @@ var TOOTH_FRAMES = 4;
 var TOP_TOOTH_Y = getGridPixel(4);
 var BOTTOM_TOOTH_Y = getGridPixel(7);
 var FLIPPED=-1,STANDARD=1;
-var DECAY_TIME = 10000;
+var DECAY_TIME = 35000;
 
-var game = new Phaser.Game(896, 640, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(896, 640, Phaser.AUTO, 'game', { preload: preload, create: create, update: update });
 var Teeth, downGums, upGums;
 var mouse;
 var toothTimers = [];
@@ -24,6 +24,7 @@ function preload() {
 }
 
 var toothbrush;
+var winningText;
 function create() {
   mouse = new Phaser.Pointer(game, 0, Phaser.CURSOR);
   game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -38,7 +39,9 @@ function create() {
   //toothbrush is on the top of it all, so it shoudl be last.
   toothbrush = game.add.sprite(0, 0, 'toothbrush');
   toothbrush.animations.add('brush', [0,1,2,3,4], 10, true);
-  game.physics.enable(toothbrush, Phaser.Physics.ARCADE);
+
+  winningText = game.add.text(game.width / 2 - 128, (game.height / 2) - 64, '', { fontSize: '50px', fill: '#FFF', stroke: '#000', strokeThickness: 6 })
+
 
 }
 
@@ -47,6 +50,7 @@ function update() {
   animateTeeth();
   updateToothbrushPosition();
   cleanTooth();
+  checkForWin();
 }
 
 function initGroups(game){
@@ -123,8 +127,8 @@ function updateToothSprite(sprite) {
 
 
 function updateToothbrushPosition(){
-  toothbrush.position.x = game.input.x - (TILE_SIZE / 2);
-  toothbrush.position.y = game.input.y - (TILE_SIZE / 2);
+  toothbrush.position.x = game.input.x - (TILE_SIZE / 4);
+  toothbrush.position.y = game.input.y - (TILE_SIZE / 4);
 }
 
 function cleanTooth(){
@@ -157,5 +161,19 @@ function cleanTooth(){
   } else {
     toothbrush.animations.stop();
     toothbrush.frame = 0;
+  }
+}
+
+function checkForWin(){
+  Teeth.cursorIndex = 0;
+  for(var i=0; i<Teeth.length; i++){
+    if(Teeth.cursor.tooth.state != CLEAN){
+      return;
+    }
+    Teeth.next();
+  }
+  winningText.text = 'YOU WIN!!!'
+  for(var timerIndex in toothTimers) {
+    clearInterval(toothTimers[timerIndex]);
   }
 }
