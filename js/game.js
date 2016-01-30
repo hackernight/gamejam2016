@@ -99,7 +99,6 @@ function getGridPixel( gridNumber) {
 }
 
 function animateTeeth(){
-  Teeth.cursorIndex = 0;
   for (var i=0; i<Teeth.length; i++){
     updateToothSprite(Teeth.cursor)
     // Teeth.cursor.animations.add('dance', [0,1,2,3], 10, true);
@@ -144,7 +143,6 @@ function cleanTooth(){
   brushArea.width = 20;
 
   //loop through the teeth, are we on top of them?
-  Teeth.cursorIndex = 0;
   if (game.input.mousePointer.isDown){
     var inTooth = false;
     for (var i = 0; i<Teeth.length; i++){
@@ -168,7 +166,6 @@ function cleanTooth(){
 }
 
 function checkForWin(){
-  Teeth.cursorIndex = 0;
   for(var i=0; i<Teeth.length; i++){
     if(Teeth.cursor.tooth.state != CLEAN){
       return;
