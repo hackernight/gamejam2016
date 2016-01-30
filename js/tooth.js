@@ -4,7 +4,6 @@ var ID = 0;
 function toothFactory(){
   var tooth = {};
   tooth.state = DIRTIEST;
-  console.log('Spawning tooth: ', ID);
   tooth.id = ID++;
   tooth.brushes = 0;
   tooth.brush = function(){
@@ -13,12 +12,10 @@ function toothFactory(){
       this.brushes = 0;
       this.state = cleanTransistion(this.state);
     }
-    console.log('[CLEAN]' + this.id + ' State: ', this.state, ' Brushes: ', this.brushes);
   };
   tooth.decay = function(){
     this.state = dirtyTransition(this.state);
     this.brushes = 0;
-    console.log('[DIRTY AFTER ', this.id, '] State: ', this.state, ' Brushes: ', this.brushes);
   };
 
   return tooth;
