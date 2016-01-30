@@ -176,15 +176,14 @@ function checkForWin(){
     Teeth.next();
   }
   winningText.text = 'YOU WIN!!!'
-  console.log(toothTimers)
-  console.log(toothTimers.length)
-  for(var timerIndex in toothTimers) {
-    clearInterval(toothTimers[timerIndex]);
-  }
   //clear the ones that haven't been scheulded yet.
   for (var startIndex in toothStartTimers){
     clearTimeout(toothStartTimers[startIndex]);
   }
-  console.log('cleared')
-  won = true;
+  toothStartTimers = [];
+
+  for(var timerIndex in toothTimers) {
+    clearInterval(toothTimers[timerIndex]);
+  }
+  toothTimers = [];
 }
