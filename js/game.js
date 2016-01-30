@@ -2,8 +2,9 @@ var GRID_Y_MAX = 10;
 var GRID_X_MAX = 14;
 var TILE_SIZE = 64;
 var TOOTH_FRAMES = 4;
-var TOP_TOOTH_Y = getGridPixel(3);
+var TOP_TOOTH_Y = getGridPixel(4);
 var BOTTOM_TOOTH_Y = getGridPixel(6);
+var FLIPPED=-1,STANDARD=1;
 
 var game = new Phaser.Game(896, 640, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 var happyTeeth, sadTeeth, hurtTeeth, downGums, upGums;
@@ -31,7 +32,7 @@ function create() {
 
   //toothbrush is on the top of it all, so it shoudl be last.
   toothbrush = game.add.sprite(0, 0, 'toothbrush');
-  toothbrush.animations.add('brush', [0,1,2,3,4], 4, true);
+  toothbrush.animations.add('brush', [0,1,2,3,4], 10, true);
   game.physics.enable(toothbrush, Phaser.Physics.ARCADE);
 
 }
@@ -52,31 +53,25 @@ function initGroups(game){
 }
 
 function generateTopTeeth(){
-  for(var i=0; i < 10; i++){
-    var gum = upGums.create(getGridPixel(2+i), TOP_TOOTH_Y, 'gums');
-    gum.scale.y = -1;
-    var tooth = happyTeeth.create(getGridPixel(2 + i), TOP_TOOTH_Y, 'happyTooth');
-    tooth.animations.add('dance', [0,1,2,3], 4, true);
-    game.physics.enable(tooth, Phaser.Physics.ARCADE);
-    tooth.scale.y = -1;
-    tooth = sadTeeth.create(getGridPixel(2 + i), TOP_TOOTH_Y, 'sadTooth');
-    tooth.scale.y = -1;
-    tooth.visible = false;
-    tooth = hurtTeeth.create(getGridPixel(2 + i), TOP_TOOTH_Y, 'hurtTooth');
-    tooth.scale.y = -1;
-    tooth.visible = false;
-  }
+  generateToothRow(FLIPPED, TOP_TOOTH_Y)
 }
 
 function generateBottomTeeth(){
+  generateToothRow(STANDARD, BOTTOM_TOOTH_Y);
+}
+
+function generateToothRow(scale, y){
   for(var i=0; i < 10; i++){
-    var gum = downGums.create(getGridPixel(2+i), BOTTOM_TOOTH_Y, 'gums');
-    var tooth = happyTeeth.create(getGridPixel(2 + i), BOTTOM_TOOTH_Y, 'happyTooth');
-    tooth.animations.add('dance', [0,1,2,3], 4, true);
-    game.physics.enable(tooth, Phaser.Physics.ARCADE);
-    tooth = sadTeeth.create(getGridPixel(2 + i), BOTTOM_TOOTH_Y, 'sadTooth');
+    var gum = downGums.create(getGridPixel(2+i), y, 'gums');
+    gum.scale.y = scale;
+    var tooth = happyTeeth.create(getGridPixel(2 + i), y, 'happyTooth');
+    tooth.scale.y = scale;
+    tooth.animations.add('dance', [0,1,2,3], 2, true);
+    tooth = sadTeeth.create(getGridPixel(2 + i), y, 'sadTooth');
+    tooth.scale.y = scale;
     tooth.visible = false;
-    tooth = hurtTeeth.create(getGridPixel(2 + i), BOTTOM_TOOTH_Y, 'hurtTooth');
+    tooth = hurtTeeth.create(getGridPixel(2 + i), y, 'hurtTooth');
+    tooth.scale.y = scale;
     tooth.visible = false;
   }
 }
@@ -99,18 +94,22 @@ function updateToothbrushPosition(){
 }
 
 function cleanTooth(){
-  happyTeeth.cursorIndex = 0;
+  //get the bounding box of the toothbrush sprite, and shrink it to fit the
+  //  area of the actual sprite
   var brushArea = toothbrush.getBounds();
   brushArea.y = brushArea.y + 22;
   brushArea.height = 20;
   brushArea.x = brushArea.x + 22;
   brushArea.width = 20;
+
+  //loop through the teeth, are we on top of them?
+  happyTeeth.cursorIndex = 0;
   if (game.input.mousePointer.isDown){
     var inTooth = false;
     for (var i = 0; i<happyTeeth.length; i++){
       if (Phaser.Rectangle.intersects(brushArea, happyTeeth.cursor.getBounds())) {
         inTooth = true;
-        break;
+        break; //stop if we found one since it's only 1 pointer.
       }
       happyTeeth.next();
     }
