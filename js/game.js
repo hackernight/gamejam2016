@@ -65,6 +65,7 @@ function generateToothRow(scale, y){
     var gum = downGums.create(getGridPixel(2+i), y, 'gums');
     gum.scale.y = scale;
     var tooth = happyTeeth.create(getGridPixel(2 + i), y, 'happyTooth');
+    tooth.tooth = toothFactory();
     tooth.scale.y = scale;
     tooth.animations.add('dance', [0,1,2,3], 2, true);
     tooth = sadTeeth.create(getGridPixel(2 + i), y, 'sadTooth');
@@ -109,6 +110,7 @@ function cleanTooth(){
     for (var i = 0; i<happyTeeth.length; i++){
       if (Phaser.Rectangle.intersects(brushArea, happyTeeth.cursor.getBounds())) {
         inTooth = true;
+        happyTeeth.cursor.tooth.brush()
         break; //stop if we found one since it's only 1 pointer.
       }
       happyTeeth.next();
