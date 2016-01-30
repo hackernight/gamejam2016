@@ -6,7 +6,9 @@ function toothFactory(){
   //tooth.state = DIRTIEST;
 
   //initializes a random state between clean and dirtiest
-  tooth.state = Math.floor(Math.random() * 3);
+  tooth.state = Math.floor(Math.random() * 2);
+  //TODO: remove this!
+  //tooth.state = 0;
   tooth.id = ID++;
   tooth.brushes = 0;
   tooth.brush = function(){

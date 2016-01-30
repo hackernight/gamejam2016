@@ -10,7 +10,7 @@ var DECAY_TIME = 35000;
 var game = new Phaser.Game(896, 640, Phaser.AUTO, 'game', { preload: preload, create: create, update: update });
 var Teeth, downGums, upGums;
 var mouse;
-var toothTimers = [];
+var toothTimers = [], toothStartTimers = [];
 function preload() {
   game.load.spritesheet('happyTooth', 'assets/happyTooth.png', TILE_SIZE, TILE_SIZE);
   game.load.spritesheet('sadTooth', 'assets/sadTooth.png', TILE_SIZE, TILE_SIZE);
@@ -38,7 +38,7 @@ function create() {
 
   //toothbrush is on the top of it all, so it shoudl be last.
   toothbrush = game.add.sprite(0, 0, 'toothbrush');
-  toothbrush.animations.add('brush', [0,1,2,3,4], 10, true);
+  toothbrush.animations.add('brush', [0, 1, 2, 3, 4, 5, 6, 7], 4, true);
 
   winningText = game.add.text(game.width / 2 - 128, (game.height / 2) - 64, '', { fontSize: '50px', fill: '#FFF', stroke: '#000', strokeThickness: 6 })
 
@@ -74,18 +74,23 @@ function generateToothRow(scale, y){
     var gum = downGums.create(getGridPixel(2+i), y, 'gums');
     gum.scale.y = scale;
     var sprite = Teeth.create(getGridPixel(2 + i), y, 'happyTooth');
+    sprite.animations.add('dance', [0,1,2,3], 10, true);
+    sprite.animations.play('dance');
     var theTooth = toothFactory();
     sprite.tooth = theTooth;
     var timerStart = Math.random() * DECAY_TIME;
-    setTimeout(function(theTooth){
+    toothStartTimers.push(setTimeout(function(theTooth){
       theTooth.decay();
-      toothTimers.push(setInterval(function(tooth){
-        tooth.decay()
-      }, DECAY_TIME, theTooth))
-    }, timerStart, sprite.tooth);
-
+      toothTimers.push(
+        setInterval(
+          function(tooth){
+            tooth.decay()
+          },
+           DECAY_TIME,
+           theTooth)
+      );
+    }, timerStart, sprite.tooth));
     sprite.scale.y = scale;
-    sprite.animations.add('dance', [0,1,2,3], 2, true);
   }
 }
 
@@ -96,11 +101,9 @@ function getGridPixel( gridNumber) {
 function animateTeeth(){
   Teeth.cursorIndex = 0;
   for (var i=0; i<Teeth.length; i++){
-
-     updateToothSprite(Teeth.cursor)
-
-
-    Teeth.cursor.animations.play('dance');
+    updateToothSprite(Teeth.cursor)
+    // Teeth.cursor.animations.add('dance', [0,1,2,3], 10, true);
+    // Teeth.cursor.animations.play('dance');
     Teeth.next();
   }
 }
@@ -173,7 +176,15 @@ function checkForWin(){
     Teeth.next();
   }
   winningText.text = 'YOU WIN!!!'
+  console.log(toothTimers)
+  console.log(toothTimers.length)
   for(var timerIndex in toothTimers) {
     clearInterval(toothTimers[timerIndex]);
   }
+  //clear the ones that haven't been scheulded yet.
+  for (var startIndex in toothStartTimers){
+    clearTimeout(toothStartTimers[startIndex]);
+  }
+  console.log('cleared')
+  won = true;
 }
