@@ -20,16 +20,23 @@ function preload() {
   game.load.spritesheet('toothbrush', 'assets/toothBrush.png', TILE_SIZE, TILE_SIZE);
   game.load.image('gums', 'assets/gums.png');
   game.load.image('bg', 'assets/background.png');
-  game.load.image('realBg', 'assets/realBackground.png')
+  game.load.image('realBg', 'assets/realBackground.png');
+
+  game.load.audio('brushingSound', 'assets/Sounds/brushSound.ogg');
 }
 
 var toothbrush;
 var winningText;
+var brushingSound;
 function create() {
   mouse = new Phaser.Pointer(game, 0, Phaser.CURSOR);
   game.physics.startSystem(Phaser.Physics.ARCADE);
   game.add.sprite(0, 0, 'realBg');
   game.add.sprite(0, 0, 'bg');
+  brushingSound = game.add.audio('brushingSound');
+  brushingSound.loop = true;
+  brushingSound.play();
+  brushingSound.pause();
 
   initGroups(game);
   Teeth.enableBody = true;
@@ -155,13 +162,19 @@ function cleanTooth(){
     }
     if(inTooth){
       toothbrush.animations.play('brush');
+      brushingSound.resume();
+      console.log(brushingSound.isPlaying);
     } else {
       toothbrush.animations.stop();
       toothbrush.frame = 0;
+      brushingSound.pause();
+      console.log(brushingSound.isPlaying);
     }
   } else {
     toothbrush.animations.stop();
     toothbrush.frame = 0;
+    brushingSound.pause();
+    console.log(brushingSound.isPlaying);
   }
 }
 
