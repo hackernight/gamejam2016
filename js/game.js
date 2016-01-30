@@ -5,10 +5,12 @@ var TOOTH_FRAMES = 4;
 var TOP_TOOTH_Y = getGridPixel(4);
 var BOTTOM_TOOTH_Y = getGridPixel(6);
 var FLIPPED=-1,STANDARD=1;
+var DECAY_TIME = 10000;
 
 var game = new Phaser.Game(896, 640, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 var happyTeeth, sadTeeth, hurtTeeth, downGums, upGums;
 var mouse;
+var toothTimers = [];
 function preload() {
   game.load.spritesheet('happyTooth', 'assets/happyTooth.png', TILE_SIZE, TILE_SIZE);
   game.load.spritesheet('sadTooth', 'assets/sadTooth.png', TILE_SIZE, TILE_SIZE);
@@ -64,16 +66,20 @@ function generateToothRow(scale, y){
   for(var i=0; i < 10; i++){
     var gum = downGums.create(getGridPixel(2+i), y, 'gums');
     gum.scale.y = scale;
-    var tooth = happyTeeth.create(getGridPixel(2 + i), y, 'happyTooth');
-    tooth.tooth = toothFactory();
-    tooth.scale.y = scale;
-    tooth.animations.add('dance', [0,1,2,3], 2, true);
-    tooth = sadTeeth.create(getGridPixel(2 + i), y, 'sadTooth');
-    tooth.scale.y = scale;
-    tooth.visible = false;
-    tooth = hurtTeeth.create(getGridPixel(2 + i), y, 'hurtTooth');
-    tooth.scale.y = scale;
-    tooth.visible = false;
+    var sprite = happyTeeth.create(getGridPixel(2 + i), y, 'happyTooth');
+    var theTooth = toothFactory();
+    sprite.tooth = theTooth;
+    var timerStart = Math.random() * DECAY_TIME;
+    setTimeout(function(theTooth){
+      theTooth.decay();
+      toothTimers.push(setInterval(function(tooth){
+        console.log(tooth)
+        tooth.decay()
+      }, DECAY_TIME, theTooth))
+    }, timerStart, sprite.tooth);
+
+    sprite.scale.y = scale;
+    sprite.animations.add('dance', [0,1,2,3], 2, true);
   }
 }
 
