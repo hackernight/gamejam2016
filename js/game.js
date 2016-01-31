@@ -29,6 +29,7 @@ function preload() {
   game.load.audio('brushingSound', 'assets/Sounds/brushSound.ogg');
   game.load.audio('levelStartSound', 'assets/Sounds/startLevel.ogg');
   game.load.audio('cleanToothSound', 'assets/Sounds/cleanTooth.ogg');
+  game.load.audio('bgMusic', 'assets/Sounds/ukeleleTake2.ogg');
 }
 
 var toothbrush;
@@ -44,6 +45,10 @@ function create() {
   brushingSound.loop = true;
   brushingSound.play();
   brushingSound.pause();
+
+  var music = game.add.audio('bgMusic');
+  game.sound.play('bgMusic', 1, true);
+  console.log(music.isPlaying);
 
   muteCleanToothSound = true;
 
