@@ -75,7 +75,6 @@ function generateToothRow(scale, y){
     gum.scale.y = scale;
     var sprite = Teeth.create(getGridPixel(2 + i), y, 'happyTooth');
     sprite.animations.add('dance', [0,1,2,3], 10, true);
-    sprite.animations.play('dance');
     var theTooth = toothFactory();
     sprite.tooth = theTooth;
     var timerStart = Math.random() * DECAY_TIME;
@@ -101,29 +100,34 @@ function getGridPixel( gridNumber) {
 function animateTeeth(){
   for (var i=0; i<Teeth.length; i++){
     updateToothSprite(Teeth.cursor)
-    // Teeth.cursor.animations.add('dance', [0,1,2,3], 10, true);
-    // Teeth.cursor.animations.play('dance');
+    Teeth.cursor.play('dance');
     Teeth.next();
   }
 }
 
 function updateToothSprite(sprite) {
-  switch (sprite.tooth.state) {
-    case CLEAN :
-        sprite.loadTexture('happyTooth',0);
-        break;
-    case DIRTY :
-        sprite.loadTexture('sadTooth',0);
-        break;
-    case DIRTIER :
-        sprite.loadTexture('sadderTooth',0);
-        break;
-    case DIRTIEST :
-        sprite.loadTexture('saddestTooth',0);
-        break;
-    default :
-        sprite.loadTexture('hurtTooth',0);
-    }
+  if(sprite.tooth.refresh){
+      sprite.tooth.refresh = false;
+      sprite.animations.stop('dance');
+
+    switch (sprite.tooth.state) {
+      case CLEAN :
+          sprite.loadTexture('happyTooth',0);
+          break;
+      case DIRTY :
+          sprite.loadTexture('sadTooth',0);
+          break;
+      case DIRTIER :
+          sprite.loadTexture('sadderTooth',0);
+          break;
+      case DIRTIEST :
+          sprite.loadTexture('saddestTooth',0);
+          break;
+      default :
+          sprite.loadTexture('hurtTooth',0);
+      }
+      sprite.animations.add('dance', [0,1,2,3], 10, true);
+  }
 }
 
 
