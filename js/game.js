@@ -120,7 +120,7 @@ function preload() {
 function create() {
   game.add.sprite(0, 0, 'realBg');
   game.add.sprite(0, 0, 'bg');
-  brushingSound = game.add.audio('brushingSound');
+  brushingSound = game.add.audio('brushingSound', .2, false);
   brushingSound.loop = true;
   brushingSound.play();
   brushingSound.pause();
