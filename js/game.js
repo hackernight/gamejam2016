@@ -28,11 +28,13 @@ function preload() {
 
   game.load.audio('brushingSound', 'assets/Sounds/brushSound.ogg');
   game.load.audio('levelStartSound', 'assets/Sounds/startLevel.ogg');
+  game.load.audio('cleanToothSound', 'assets/Sounds/cleanTooth.ogg');
 }
 
 var toothbrush;
 var winningText;
 var brushingSound;
+var muteCleanToothSound;
 function create() {
   mouse = new Phaser.Pointer(game, 0, Phaser.CURSOR);
   game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -42,13 +44,19 @@ function create() {
   brushingSound.loop = true;
   brushingSound.play();
   brushingSound.pause();
-  game.add.audio('levelStartSound');
+  brushingSound.volume = 0.7;
+
+  muteCleanToothSound = true;
 
   initGroups(game);
   Teeth.enableBody = true;
   generateTopTeeth();
   generateBottomTeeth();
   game.sound.play('levelStartSound');
+  animateTeeth();
+
+console.log("loading is done!");
+  muteCleanToothSound = false;
 
   game.add.sprite(0, 0, 'topLip');
   game.add.sprite(0, getGridPixel(6) + 36, 'bottomLip');
@@ -58,8 +66,6 @@ function create() {
   toothbrush.animations.add('brush', [0, 1, 2, 3, 4, 5, 6, 7], 10, true);
 
   winningText = game.add.text(game.width / 2 - 128, (game.height / 2) - 64, '', { fontSize: '50px', fill: '#FFF', stroke: '#000', strokeThickness: 6 })
-
-
 }
 
 var frame = 0;
@@ -128,6 +134,7 @@ function animateTeeth(){
 }
 
 function updateToothSprite(sprite) {
+  console.log("updating sprite; mute var is ", muteCleanToothSound);
   if(sprite.tooth.refresh){
       sprite.tooth.refresh = false;
       sprite.animations.stop('dance');
@@ -135,6 +142,9 @@ function updateToothSprite(sprite) {
     switch (sprite.tooth.state) {
       case CLEAN :
           sprite.loadTexture('happyTooth',0);
+          if (!muteCleanToothSound) {
+            game.sound.play('cleanToothSound');
+          }
           break;
       case DIRTY :
           sprite.loadTexture('sadTooth',0);
