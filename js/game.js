@@ -58,7 +58,7 @@ function create() {
   initGroups(game);
 
   game.add.sprite(0, 0, 'topLip');
-  game.add.sprite(0, getGridPixel(6) + 36, 'bottomLip');
+  game.add.sprite(0, getGridPixel(5), 'bottomLip');
 
   //toothbrush is on the top of it all, so it shoudl be last.
   toothbrush = game.add.sprite(0, 0, 'toothbrush');
