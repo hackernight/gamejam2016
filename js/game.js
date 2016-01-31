@@ -63,7 +63,8 @@ function create() {
   toothbrush = game.add.sprite(0, 0, 'toothbrush');
   toothbrush.animations.add('brush', [0, 1, 2, 3, 4, 5, 6, 7], 10, true);
 
-  winningText = game.add.text(game.width / 2 - 128, (game.height / 2) - 64, '', { fontSize: '50px', fill: '#FFF', stroke: '#000', strokeThickness: 6 })
+  winningText = game.add.text(0, 0, '', { fontSize: '50px', fill: '#FFF', stroke: '#000', strokeThickness: 6 , boundsAlignV: 'middle', boundsAlignH: 'center'})
+  winningText.setTextBounds(0, 250 , 896, 100);
 }
 
 var frame = 0;
@@ -214,7 +215,7 @@ function checkForWin(){
     Teeth.next();
   }
   if (cavityCount >= MAX_CAVITIES ){
-    winningText.text = "You should take better care of your teeth!"
+    winningText.text = "Take better care of your teeth!"
   } else if(totalHealthy + cavityCount == Teeth.length){
     winningText.text = 'All Clean!'
   } else {
