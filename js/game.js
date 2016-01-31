@@ -20,6 +20,7 @@ function preload() {
   game.load.spritesheet('cavityTooth', 'assets/cavityTooth.png', TILE_SIZE, TILE_SIZE);
   game.load.spritesheet('toothbrush', 'assets/toothBrush.png', TILE_SIZE, TILE_SIZE);
   game.load.spritesheet('splash', 'assets/splashScreen.png', 896, 640);
+  game.load.spritesheet('title', 'assets/title.png', 896, 640);
   game.load.image('gums', 'assets/gums.png');
   game.load.image('gumBlock', 'assets/gumTile.png');
   game.load.image('topLip', 'assets/topLips.png');
@@ -41,7 +42,7 @@ var restartText;
 var brushingSound;
 var muteCleanToothSound;
 var splashIsUp = true;
-var splash, splashText, textTimer;
+var splash, splashText, textTimer, title;
 function create() {
   mouse = new Phaser.Pointer(game, 0, Phaser.CURSOR);
   game.add.sprite(0, 0, 'realBg');
@@ -72,6 +73,7 @@ function update() {
     checkForWin();
   } else {
     splash.animations.play('run');
+    title.animations.play('bounce');
     checkForGameStart();
   }
 }
@@ -80,6 +82,10 @@ function showSplashScreen(){
   splashIsUp = true;
   splash = game.add.sprite(0,0, 'splash');
   splash.animations.add('run', [0,1,2,3], 6, true);
+
+  title = game.add.sprite(0,0,'title');
+  title.animations.add('bounce', [0,1,2,3,4,5], 10, true);
+
   splashText = game.add.text(0,0, 'Click To Start...', {fontSize:'30px', fill:'#FFF', stroke: '#000', strokeThickness:6, boundsAlignV:'middle', boundsAlignH:'center'});
   splashText.setTextBounds(0, 225, 896, 100);
   textTimer = setInterval(function(){
@@ -88,7 +94,7 @@ function showSplashScreen(){
 }
 
 function showToothBrush(){
-  //toothbrush is on the top of it all, so it shoudl be last.
+  //toothbrush is on the top of it all, so it should be last.
   toothbrush = game.add.sprite(0, 0, 'toothbrush');
   toothbrush.animations.add('brush', [0, 1, 2, 3, 4, 5, 6, 7], 10, true);
 }
@@ -115,6 +121,7 @@ function checkForGameStart(){
     clearInterval(textTimer);
     splashText.destroy();
     splash.destroy();
+    title.destroy();
   }
 }
 
