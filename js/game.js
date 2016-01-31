@@ -6,6 +6,7 @@ var TOP_TOOTH_Y = getGridPixel(4);
 var BOTTOM_TOOTH_Y = getGridPixel(7);
 var FLIPPED=-1,STANDARD=1;
 var DECAY_TIME = 35000;
+var MAX_CAVITIES = 2;
 
 var game = new Phaser.Game(896, 640, Phaser.AUTO, 'game', { preload: preload, create: create, update: update });
 var Teeth, downGums, upGums;
@@ -16,7 +17,7 @@ function preload() {
   game.load.spritesheet('sadTooth', 'assets/sadTooth.png', TILE_SIZE, TILE_SIZE);
   game.load.spritesheet('sadderTooth', 'assets/sadderTooth.png', TILE_SIZE, TILE_SIZE);
   game.load.spritesheet('saddestTooth', 'assets/saddestTooth.png', TILE_SIZE, TILE_SIZE);
-  game.load.spritesheet('hurtTooth', 'assets/hurtTooth.png', TILE_SIZE, TILE_SIZE);
+  game.load.spritesheet('cavityTooth', 'assets/cavityTooth.png', TILE_SIZE, TILE_SIZE);
   game.load.spritesheet('toothbrush', 'assets/toothBrush.png', TILE_SIZE, TILE_SIZE);
   game.load.image('gums', 'assets/gums.png');
   game.load.image('bg', 'assets/background.png');
@@ -134,7 +135,7 @@ function updateToothSprite(sprite) {
           sprite.loadTexture('saddestTooth',0);
           break;
       default :
-          sprite.loadTexture('hurtTooth',0);
+          sprite.loadTexture('cavityTooth',0);
       }
       sprite.animations.add('dance', [0,1,2,3], 10, true);
   }
@@ -183,13 +184,24 @@ function cleanTooth(){
 }
 
 function checkForWin(){
+  var cavityCount = 0;
+  var totalHealthy = Teeth.length;
   for(var i=0; i<Teeth.length; i++){
+    if (Teeth.cursor.tooth.state == CAVITY){
+      cavityCount += 1;
+    }
     if(Teeth.cursor.tooth.state != CLEAN){
-      return;
+      totalHealthy -= 1;
     }
     Teeth.next();
   }
-  winningText.text = 'YOU WIN!!!'
+  if (cavityCount >= MAX_CAVITIES ){
+    winningText.text = "You should take better care of your teeth!"
+  } else if(totalHealthy + cavityCount == Teeth.length){
+    winningText.text = 'All Clean!'
+  } else {
+    return;
+  }
   //clear the ones that haven't been scheulded yet.
   for (var startIndex in toothStartTimers){
     clearTimeout(toothStartTimers[startIndex]);
