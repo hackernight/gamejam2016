@@ -275,7 +275,7 @@ function generateToothRow(scale, y, pattern, brushesPerStage){
       sprite.animations.add('dance', [0,1,2,3], 10, true);
       var theTooth = toothFactory(brushesPerStage);
       sprite.tooth = theTooth;
-      var timerStart = Math.random() * DECAY_TIME;
+      var timerStart = Math.random() * level.decayTime;
       toothStartTimers.push(setTimeout(function(theTooth){
         theTooth.decay();
         toothTimers.push(
@@ -283,7 +283,7 @@ function generateToothRow(scale, y, pattern, brushesPerStage){
             function(tooth){
               tooth.decay()
             },
-             DECAY_TIME,
+             level.decayTime,
              theTooth)
         );
       }, timerStart, sprite.tooth));

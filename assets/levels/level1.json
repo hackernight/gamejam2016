@@ -3,5 +3,6 @@
   "top":"0011000110",
   "bottom":"0000111000",
   "brushesPerStage":10,
-  "maxCavities":3
+  "maxCavities":3,
+  "decayTime":35000
 }

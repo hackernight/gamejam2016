@@ -4,5 +4,6 @@
   "bottom":"1111111111",
   "brushesPerStage":60,
   "maxCavities":1,
+  "decayTime":25000,
   "nextLevel":"end"
 }
