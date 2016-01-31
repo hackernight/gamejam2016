@@ -52,6 +52,7 @@ var cleanToothSounds = []; //sounds for when teeth become clean
 var levelStartSounds = []; //sounds to play when the level begins
 var gettingDirtierSounds = []; //sounds to play when we almost have a cavity
 var cavitySounds = []; //sounds when we have a cavity
+var lost = false;
 
 BrushieBrushie.AssetLoader = function(game) {};
 
@@ -402,7 +403,7 @@ function checkForWin(){
       finalText.text = "Take better care of your teeth!";
       restartText.text = "Space to restart!";
       restartText.visible = true;
-
+      lost = true;
       //game.sound.pause('bgMusic');
       //game.sound.play('loseGameSound');
       game.sound.play(getRandomSound(losingSounds));
@@ -440,10 +441,11 @@ function checkForWin(){
     return;
   }
   if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) || game.input.keyboard.isDown(Phaser.Keyboard.ESC)){
-    if(level.nextLevel != 'end'){
+    if(!lost && level.nextLevel != 'end'){
       resetGame(false);
       return;
     } else {
+      lost = false;
       resetGame(true);
       return;
     }
