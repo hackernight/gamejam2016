@@ -27,6 +27,7 @@ function preload() {
   game.load.image('bottomLip', 'assets/bottomLips.png');
   game.load.image('bg', 'assets/background.png');
   game.load.image('realBg', 'assets/realBackground.png');
+  game.load.image('redOverlay', 'assets/redOverlay.png');
 
   game.load.audio('brushingSound', 'assets/Sounds/brushSound.ogg');
   game.load.audio('levelStartSound', 'assets/Sounds/startLevel.ogg');
@@ -36,13 +37,14 @@ function preload() {
   game.load.audio('loseGameSound', 'assets/Sounds/denturesItIs2.ogg');
 }
 
-var toothbrush;
+var toothbrush, redOverlay;
 var finalText;
 var restartText;
 var brushingSound;
 var muteCleanToothSound;
 var splashIsUp = true;
 var splash, splashText, textTimer, title;
+var redOverlayLock = false;
 function create() {
   mouse = new Phaser.Pointer(game, 0, Phaser.CURSOR);
   game.add.sprite(0, 0, 'realBg');
@@ -61,6 +63,9 @@ function create() {
   game.add.sprite(0, getGridPixel(5), 'bottomLip');
 
   showSplashScreen();
+
+  redOverlay = game.add.sprite(0, 0, 'redOverlay');
+  redOverlay.alpha = 0;
 
 }
 
@@ -227,10 +232,16 @@ function cleanTooth(){
   //loop through the teeth, are we on top of them?
   if (game.input.mousePointer.isDown){
     var inTooth = false;
+    var tween;
     for (var i = 0; i<teeth.length; i++){
       if (Phaser.Rectangle.intersects(brushArea, teeth.cursor.getBounds())) {
         inTooth = true;
         teeth.cursor.tooth.brush()
+        if(teeth.cursor.tooth.state == CAVITY && redOverlayLock == false) {
+          tween = game.add.tween(redOverlay).to( { alpha: .5 }, 250, Phaser.Easing.Linear.None, true, 0, 0, true);
+          redOverlayLock = true;
+          tween.onComplete.add(function(){redOverlayLock = false;}, this);
+        }
         break; //stop if we found one since it's only 1 pointer.
       }
       teeth.next();
