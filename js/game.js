@@ -23,6 +23,7 @@ function preload() {
   game.load.image('realBg', 'assets/realBackground.png');
 
   game.load.audio('brushingSound', 'assets/Sounds/brushSound.ogg');
+  game.load.audio('levelStartSound', 'assets/Sounds/startLevel.ogg');
 }
 
 var toothbrush;
@@ -37,11 +38,13 @@ function create() {
   brushingSound.loop = true;
   brushingSound.play();
   brushingSound.pause();
+  game.add.audio('levelStartSound');
 
   initGroups(game);
   Teeth.enableBody = true;
   generateTopTeeth();
   generateBottomTeeth();
+  game.sound.play('levelStartSound');
 
   //toothbrush is on the top of it all, so it shoudl be last.
   toothbrush = game.add.sprite(0, 0, 'toothbrush');
@@ -163,18 +166,15 @@ function cleanTooth(){
     if(inTooth){
       toothbrush.animations.play('brush');
       brushingSound.resume();
-      console.log(brushingSound.isPlaying);
     } else {
       toothbrush.animations.stop();
       toothbrush.frame = 0;
       brushingSound.pause();
-      console.log(brushingSound.isPlaying);
     }
   } else {
     toothbrush.animations.stop();
     toothbrush.frame = 0;
     brushingSound.pause();
-    console.log(brushingSound.isPlaying);
   }
 }
 
