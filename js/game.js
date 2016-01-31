@@ -19,6 +19,7 @@ function preload() {
   game.load.spritesheet('saddestTooth', 'assets/saddestTooth.png', TILE_SIZE, TILE_SIZE);
   game.load.spritesheet('cavityTooth', 'assets/cavityTooth.png', TILE_SIZE, TILE_SIZE);
   game.load.spritesheet('toothbrush', 'assets/toothBrush.png', TILE_SIZE, TILE_SIZE);
+  game.load.spritesheet('splash', 'assets/splashScreen.png', 896, 640);
   game.load.image('gums', 'assets/gums.png');
   game.load.image('gumBlock', 'assets/gumTile.png');
   game.load.image('topLip', 'assets/topLips.png');
@@ -38,9 +39,10 @@ var toothbrush;
 var winningText;
 var brushingSound;
 var muteCleanToothSound;
+var splashIsUp = true;
+var splash, splashText, textTimer;
 function create() {
   mouse = new Phaser.Pointer(game, 0, Phaser.CURSOR);
-  game.physics.startSystem(Phaser.Physics.ARCADE);
   game.add.sprite(0, 0, 'realBg');
   game.add.sprite(0, 0, 'bg');
   brushingSound = game.add.audio('brushingSound');
@@ -50,18 +52,10 @@ function create() {
 
   var music = game.add.audio('bgMusic');
   game.sound.play('bgMusic', 1, true);
-  console.log(music.isPlaying);
 
   muteCleanToothSound = true;
 
   initGroups(game);
-  Teeth.enableBody = true;
-  generateTopTeeth();
-  generateBottomTeeth();
-  game.sound.play('levelStartSound');
-  animateTeeth();
-
-  muteCleanToothSound = false;
 
   game.add.sprite(0, 0, 'topLip');
   game.add.sprite(0, getGridPixel(6) + 36, 'bottomLip');
@@ -70,15 +64,45 @@ function create() {
   toothbrush = game.add.sprite(0, 0, 'toothbrush');
   toothbrush.animations.add('brush', [0, 1, 2, 3, 4, 5, 6, 7], 10, true);
 
-  winningText = game.add.text(game.width / 2 - 128, (game.height / 2) - 64, '', { fontSize: '50px', fill: '#FFF', stroke: '#000', strokeThickness: 6 })
+  splash = game.add.sprite(0,0, 'splash');
+  splash.animations.add('run', [0,1,2,3], 6, true);
+  splashText = game.add.text(0,0, 'Click To Start...', {fontSize:'30px', fill:'#FFF', stroke: '#000', strokeThickness:6, boundsAlignV:'middle', boundsAlignH:'center'});
+  splashText.setTextBounds(0, 235, 896, 100);
+  textTimer = setInterval(function(){
+    splashText.visible = !splashText.visible;
+  }, 500);
+
+  winningText = game.add.text(0, 0, '', { fontSize: '50px', fill: '#FFF', stroke: '#000', strokeThickness: 6 , boundsAlignV: 'middle', boundsAlignH: 'center'})
+  winningText.setTextBounds(0, 250 , 896, 100);
 }
 
 var frame = 0;
 function update() {
-  animateTeeth();
-  updateToothbrushPosition();
-  cleanTooth();
-  checkForWin();
+  if(!splashIsUp){
+    animateTeeth();
+    updateToothbrushPosition();
+    cleanTooth();
+    checkForWin();
+  } else {
+    splash.animations.play('run');
+    checkForGameStart();
+  }
+}
+
+
+function checkForGameStart(){
+  if(game.input.mousePointer.isDown){
+    generateTopTeeth();
+    generateBottomTeeth();
+    game.sound.play('levelStartSound');
+    animateTeeth();
+
+    muteCleanToothSound = false;
+    splashIsUp = false;
+    clearInterval(textTimer);
+    splashText.destroy();
+    splash.destroy();
+  }
 }
 
 function initGroups(game){
@@ -221,7 +245,7 @@ function checkForWin(){
     Teeth.next();
   }
   if (cavityCount >= MAX_CAVITIES ){
-    winningText.text = "You should take better care of your teeth!"
+    winningText.text = "Take better care of your teeth!"
     //game.sound.remove('bgMusic');
     //game.sound.play('winGameSound');
   } else if(totalHealthy + cavityCount == Teeth.length){
