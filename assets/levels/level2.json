@@ -1,0 +1,8 @@
+{
+  "name":"Childs Play",
+  "top":"0001111100",
+  "bottom":"0000111000",
+  "brushesPerStage":30,
+  "maxCavities":3,
+  "nextLevel":"end"
+}
