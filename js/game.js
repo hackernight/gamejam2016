@@ -30,6 +30,8 @@ function preload() {
   game.load.audio('levelStartSound', 'assets/Sounds/startLevel.ogg');
   game.load.audio('cleanToothSound', 'assets/Sounds/cleanTooth.ogg');
   game.load.audio('bgMusic', 'assets/Sounds/ukeleleTake2.ogg');
+  game.load.audio('winGameSound', 'assets/Sounds/whatALovelySmile2.ogg');
+  game.load.audio('loseGameSound', 'assets/Sounds/denturesItIs2.ogg');
 }
 
 var toothbrush;
@@ -220,8 +222,12 @@ function checkForWin(){
   }
   if (cavityCount >= MAX_CAVITIES ){
     winningText.text = "You should take better care of your teeth!"
+    //game.sound.remove('bgMusic');
+    //game.sound.play('winGameSound');
   } else if(totalHealthy + cavityCount == Teeth.length){
     winningText.text = 'All Clean!'
+    //game.sound.remove('bgMusic');
+    //game.sound.play('winGameSound');
   } else {
     return;
   }
