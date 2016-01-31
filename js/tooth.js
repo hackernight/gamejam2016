@@ -16,13 +16,19 @@ function toothFactory(){
     tooth.brushes += 1;
     if (this.brushes > BRUSHES_PER_STAGE_DEBUG){
       this.brushes = 0;
-      this.refresh = true;
+      var oldState = this.state;
       this.state = cleanTransistion(this.state);
+      if (this.state != oldState) {
+        this.refresh = true;
+      }
     }
   };
   tooth.decay = function(){
-    this.refresh = true;
+    var oldState = this.state;
     this.state = dirtyTransition(this.state);
+    if (this.state != oldState) {
+      this.refresh = true;
+    }
     this.brushes = 0;
   };
 
