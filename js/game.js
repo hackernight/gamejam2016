@@ -94,9 +94,11 @@ function preload() {
   game.load.audio('levelStartSound', 'assets/Sounds/startLevel.ogg');
   game.load.audio('cleanToothSound', 'assets/Sounds/cleanTooth.ogg');
   game.load.audio('bgMusic', 'assets/Sounds/ukeleleTake2.ogg');
-  game.load.audio('winGameSound', 'assets/Sounds/whatALovelySmile2.ogg');
-  game.load.audio('loseGameSound', 'assets/Sounds/denturesItIs2.ogg');
-
+  game.load.audio('winGameSound', 'assets/Sounds/yayyy.ogg');
+  game.load.audio('loseGameSound', 'assets/Sounds/denturesItIs.ogg');
+  game.load.audio('gettingDirtier', 'assets/Sounds/gettingDirtier.ogg');
+  game.load.audio('ouchie', 'assets/Sounds/ouchie.ogg');
+  
   loadLevels();
 }
 
@@ -297,9 +299,13 @@ function updateToothSprite(sprite) {
           break;
       case DIRTIEST :
           sprite.loadTexture('saddestTooth',0);
+          game.sound.play('gettingDirtier');
+
           break;
       default :
           sprite.loadTexture('cavityTooth',0);
+          game.sound.play('ouchie');
+
       }
       sprite.animations.add('dance', [0,1,2,3], 10, true);
   }
@@ -372,8 +378,8 @@ function checkForWin(){
       finalText.text = "Take better care of your teeth!"
       restartText.visible = true;
 
-      game.sound.remove('bgMusic');
-      game.sound.play('winGameSound');
+      //game.sound.pause('bgMusic');
+      game.sound.play('loseGameSound');
     }
   } else if(totalHealthy + cavityCount == teeth.length){
     if(doOnce){
@@ -384,7 +390,7 @@ function checkForWin(){
       finalText.text = endText;
       restartText.visible = true;
 
-      game.sound.remove('bgMusic');
+      //game.sound.pause('bgMusic');
       game.sound.play('winGameSound');
     }
   } else {
