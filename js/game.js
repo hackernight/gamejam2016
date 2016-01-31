@@ -6,12 +6,47 @@ var TOP_TOOTH_Y = getGridPixel(4);
 var BOTTOM_TOOTH_Y = getGridPixel(6);
 var FLIPPED=-1,STANDARD=1;
 var DECAY_TIME = 35000;
-var MAX_CAVITIES = 2;
+var MAX_TEETH = 10;
+var MAX_CAVITIES_DEFAULT = 2;
+/*
+ *Game Objects:
+ */
+//Groups
+var teeth, gums, gumBlocks;
+//Text
+var finalText,
+    restartText,
+    splashText,
+    muteText,
+    loadingText;
 
+// Stand Alone Sprites
+var redOverlay,
+    brushingSound,
+    toothbrush,
+    splash,
+    title;
+
+//Audio
+var music;
+
+//Level json
+var level;
+
+//Global State
+var toothTimers = [], toothStartTimers = []; //Timers to keep the teeth decaying
+var muteCleanToothSound; // HACK: this is to avoid instant SHINY spam
+var redOverlayLock = false;  //Lock to not trigger the tween twice
+var splashIsUp = true;
+var doOnce = true; //Used for end of game stuff that needs to happen once.
+var quietM = false; //Used to 'debounce' the mute button
+var textTimer; //Blinking 'Press Start' timer.
+var levelList; //List of level jsons to load
+var levelIndex = 0; //The current level
+
+//The game.
 var game = new Phaser.Game(896, 640, Phaser.AUTO, 'game', { preload: preload, create: create, update: update });
-var teeth, downGums, gumBlocks;
-var mouse;
-var toothTimers = [], toothStartTimers = [];
+
 function preload() {
   game.load.spritesheet('happyTooth', 'assets/happyTooth.png', TILE_SIZE, TILE_SIZE);
   game.load.spritesheet('sadTooth', 'assets/sadTooth.png', TILE_SIZE, TILE_SIZE);
@@ -35,18 +70,11 @@ function preload() {
   game.load.audio('bgMusic', 'assets/Sounds/ukeleleTake2.ogg');
   game.load.audio('winGameSound', 'assets/Sounds/whatALovelySmile2.ogg');
   game.load.audio('loseGameSound', 'assets/Sounds/denturesItIs2.ogg');
+
+  loadLevels();
 }
 
-var toothbrush, redOverlay;
-var finalText;
-var restartText;
-var brushingSound;
-var muteCleanToothSound;
-var splashIsUp = true;
-var splash, splashText, textTimer, title;
-var redOverlayLock = false;
 function create() {
-  mouse = new Phaser.Pointer(game, 0, Phaser.CURSOR);
   game.add.sprite(0, 0, 'realBg');
   game.add.sprite(0, 0, 'bg');
   brushingSound = game.add.audio('brushingSound');
@@ -54,7 +82,7 @@ function create() {
   brushingSound.play();
   brushingSound.pause();
 
-  var music = game.add.audio('bgMusic');
+  music = game.add.audio('bgMusic');
   game.sound.play('bgMusic', 1, true);
 
   initGroups(game);
@@ -69,18 +97,45 @@ function create() {
 
 }
 
-var frame = 0;
 function update() {
+  checkForMute();
   if(!splashIsUp){
     animateTeeth();
     updateToothbrushPosition();
     cleanTooth();
     checkForWin();
+    if(game.input.keyboard.isDown(Phaser.Keyboard.ESC)){
+      resetGame();
+    }
   } else {
     splash.animations.play('run');
     title.animations.play('bounce');
     checkForGameStart();
   }
+}
+
+function checkForMute(){
+  if(game.input.keyboard.isDown(Phaser.Keyboard.M) && !quietM){
+    quietM = true;
+    setTimeout(function(){
+      quietM = false;
+    }, 200);
+    game.sound.mute = !game.sound.mute;
+  }
+}
+
+function loadLevels(){
+  game.load.json('levels', 'assets/levels/levels.json');
+  var interval = setInterval(function(){
+    if(game.cache.checkJSONKey('levels') && loadingText !== undefined){
+      clearInterval(interval);
+      levelList = game.cache.getJSON('levels').levels;
+      for(var level in levelList){
+        game.load.json(level, 'assets/levels/'+level);
+      }
+      loadingText.destroy();
+    }
+  }, 100);
 }
 
 function showSplashScreen(){
@@ -96,6 +151,12 @@ function showSplashScreen(){
   textTimer = setInterval(function(){
     splashText.visible = !splashText.visible;
   }, 500);
+
+  muteText = game.add.text(0,0, 'press \'M\' at any time to mute', {fontSize:'15px', fill:'#888', boundsAlignV:'middle', boundsAlignH:'right'});
+  muteText.setTextBounds(0, 600, 896, 40);
+
+  loadingText = game.add.text(0,0, 'Loading levels...' ,{fontSize:'20px', fill:'#FFF', stroke: '#000', strokeThickness:6, boundsAlignV:'middle', boundsAlignH:'center'});
+  loadingText.setTextBounds(0, 560, 896, 100);
 }
 
 function showToothBrush(){
@@ -115,13 +176,7 @@ function showFinalText(){
 
 function checkForGameStart(){
   if(game.input.mousePointer.isDown){
-    muteCleanToothSound = true;
-    generateTopTeeth();
-    generateBottomTeeth();
-    game.sound.play('levelStartSound');
-    animateTeeth();
-    muteCleanToothSound = false;
-    showToothBrush();
+    startLevel();
     splashIsUp = false;
     clearInterval(textTimer);
     splashText.destroy();
@@ -130,46 +185,65 @@ function checkForGameStart(){
   }
 }
 
+function startLevel(){
+  level = game.cache.getJSON(levelList[levelIndex++]);
+  muteCleanToothSound = true;
+  var brushesPerStage = level.brushesPerStage ? level.brushesPerStage : BRUSHES_PER_STAGE_DEFAULT;
+  generateTopTeeth(level.top, brushesPerStage);
+  generateBottomTeeth(level.bottom, brushesPerStage);
+  game.sound.play('levelStartSound');
+  animateTeeth();
+  muteCleanToothSound = false;
+  showToothBrush();
+  var levelText = game.add.text(0,0, level.name ,{fontSize:'30px', fill:'#FFF', stroke: '#000', strokeThickness:6, boundsAlignV:'middle', boundsAlignH:'center'});
+  levelText.setTextBounds(0, 225, 896, 100);
+  setTimeout(function(){
+    levelText.destroy();
+  }, 1000);
+}
+
 function initGroups(game){
   gumBlocks = game.add.group();
-  downGums = game.add.group();
+  gums = game.add.group();
   teeth = game.add.group();
 }
 
-function generateTopTeeth(){
-  generateToothRow(FLIPPED, TOP_TOOTH_Y)
+function generateTopTeeth(pattern, brushesPerStage){
+  generateToothRow(FLIPPED, TOP_TOOTH_Y, pattern, brushesPerStage)
 }
 
-function generateBottomTeeth(){
-  generateToothRow(STANDARD, BOTTOM_TOOTH_Y);
+function generateBottomTeeth(pattern, brushesPerStage){
+  generateToothRow(STANDARD, BOTTOM_TOOTH_Y, pattern, brushesPerStage);
 }
 
-function generateToothRow(scale, y){
-  for(var i=0; i < 10; i++){
+function generateToothRow(scale, y, pattern, brushesPerStage){
+  for(var i=0; i < MAX_TEETH; i++){
     if(scale == FLIPPED){
       var gumBlock = gumBlocks.create(getGridPixel(2+i), y - 128 , 'gumBlock');
     } else {
       var gumBlock = gumBlocks.create(getGridPixel(2+i), y + 64, 'gumBlock');
     }
-    var gum = downGums.create(getGridPixel(2+i), y, 'gums');
+    var gum = gums.create(getGridPixel(2+i), y, 'gums');
     gum.scale.y = scale;
-    var sprite = teeth.create(getGridPixel(2 + i), y, 'happyTooth');
-    sprite.animations.add('dance', [0,1,2,3], 10, true);
-    var theTooth = toothFactory();
-    sprite.tooth = theTooth;
-    var timerStart = Math.random() * DECAY_TIME;
-    toothStartTimers.push(setTimeout(function(theTooth){
-      theTooth.decay();
-      toothTimers.push(
-        setInterval(
-          function(tooth){
-            tooth.decay()
-          },
-           DECAY_TIME,
-           theTooth)
-      );
-    }, timerStart, sprite.tooth));
-    sprite.scale.y = scale;
+    if(pattern[i] == '1'){ //only put the tooth we actually want
+      var sprite = teeth.create(getGridPixel(2 + i), y, 'happyTooth');
+      sprite.animations.add('dance', [0,1,2,3], 10, true);
+      var theTooth = toothFactory(brushesPerStage);
+      sprite.tooth = theTooth;
+      var timerStart = Math.random() * DECAY_TIME;
+      toothStartTimers.push(setTimeout(function(theTooth){
+        theTooth.decay();
+        toothTimers.push(
+          setInterval(
+            function(tooth){
+              tooth.decay()
+            },
+             DECAY_TIME,
+             theTooth)
+        );
+      }, timerStart, sprite.tooth));
+      sprite.scale.y = scale;
+    }
   }
 }
 
@@ -212,8 +286,6 @@ function updateToothSprite(sprite) {
       sprite.animations.add('dance', [0,1,2,3], 10, true);
   }
 }
-
-
 
 function updateToothbrushPosition(){
   toothbrush.position.x = game.input.x - (TILE_SIZE / 4);
@@ -261,7 +333,6 @@ function cleanTooth(){
   }
 }
 
-var doOnce = true;
 function checkForWin(){
   var cavityCount = 0;
   var totalHealthy = teeth.length;
@@ -274,7 +345,8 @@ function checkForWin(){
     }
     teeth.next();
   }
-  if (cavityCount >= MAX_CAVITIES ){
+  var allowedCavities = level.maxCavities ? level.maxCavities : MAX_CAVITIES_DEFAULT;
+  if (cavityCount >= allowedCavities ){
     if(doOnce){
       doOnce = false;
 
@@ -310,7 +382,7 @@ function checkForWin(){
   }
   toothTimers = [];
   //look for restart
-  if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)){
+  if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) || game.input.keyboard.isDown(Phaser.Keyboard.ESC)){
     resetGame();
   }
 }
@@ -320,7 +392,11 @@ function resetGame(){
   teeth = game.add.group()
   toothbrush.destroy();
   showSplashScreen();
-  finalText.destroy();
-  restartText.destroy();
+  if(finalText !== undefined){
+    finalText.destroy();
+  }
+  if (restartText !== undefined){
+    restartText.destroy();
+  }
   doOnce = true;
 }
