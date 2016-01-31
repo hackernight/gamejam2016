@@ -54,31 +54,12 @@ function create() {
   var music = game.add.audio('bgMusic');
   game.sound.play('bgMusic', 1, true);
 
-  muteCleanToothSound = true;
-
   initGroups(game);
 
   game.add.sprite(0, 0, 'topLip');
   game.add.sprite(0, getGridPixel(5), 'bottomLip');
 
-  //toothbrush is on the top of it all, so it shoudl be last.
-  toothbrush = game.add.sprite(0, 0, 'toothbrush');
-  toothbrush.animations.add('brush', [0, 1, 2, 3, 4, 5, 6, 7], 10, true);
-
-  splash = game.add.sprite(0,0, 'splash');
-  splash.animations.add('run', [0,1,2,3], 6, true);
-  splashText = game.add.text(0,0, 'Click To Start...', {fontSize:'30px', fill:'#FFF', stroke: '#000', strokeThickness:6, boundsAlignV:'middle', boundsAlignH:'center'});
-  splashText.setTextBounds(0, 225, 896, 100);
-  textTimer = setInterval(function(){
-    splashText.visible = !splashText.visible;
-  }, 500);
-
-  finalText = game.add.text(0, 0, '', { fontSize: '50px', fill: '#FFF', stroke: '#000', strokeThickness: 6 , boundsAlignV: 'middle', boundsAlignH: 'center'})
-  finalText.setTextBounds(0, 250 , 896, 100);
-
-  restartText = game.add.text(0, 0, 'Click to restart!', { fontSize: '30px', fill: '#FFF', stroke: '#000', strokeThickness: 6 , boundsAlignV: 'middle', boundsAlignH: 'center'})
-  restartText.setTextBounds(0, 350 , 896, 100);
-  restartText.visible = false;
+  showSplashScreen();
 
 }
 
@@ -95,15 +76,41 @@ function update() {
   }
 }
 
+function showSplashScreen(){
+  splashIsUp = true;
+  splash = game.add.sprite(0,0, 'splash');
+  splash.animations.add('run', [0,1,2,3], 6, true);
+  splashText = game.add.text(0,0, 'Click To Start...', {fontSize:'30px', fill:'#FFF', stroke: '#000', strokeThickness:6, boundsAlignV:'middle', boundsAlignH:'center'});
+  splashText.setTextBounds(0, 225, 896, 100);
+  textTimer = setInterval(function(){
+    splashText.visible = !splashText.visible;
+  }, 500);
+}
+
+function showToothBrush(){
+  //toothbrush is on the top of it all, so it shoudl be last.
+  toothbrush = game.add.sprite(0, 0, 'toothbrush');
+  toothbrush.animations.add('brush', [0, 1, 2, 3, 4, 5, 6, 7], 10, true);
+}
+
+function showFinalText(){
+  finalText = game.add.text(0, 0, '', { fontSize: '50px', fill: '#FFF', stroke: '#000', strokeThickness: 6 , boundsAlignV: 'middle', boundsAlignH: 'center'})
+  finalText.setTextBounds(0, 250 , 896, 100);
+
+  restartText = game.add.text(0, 0, 'Space to restart!', { fontSize: '30px', fill: '#FFF', stroke: '#000', strokeThickness: 6 , boundsAlignV: 'middle', boundsAlignH: 'center'})
+  restartText.setTextBounds(0, 350 , 896, 100);
+  restartText.visible = false;
+}
 
 function checkForGameStart(){
   if(game.input.mousePointer.isDown){
+    muteCleanToothSound = true;
     generateTopTeeth();
     generateBottomTeeth();
     game.sound.play('levelStartSound');
     animateTeeth();
-
     muteCleanToothSound = false;
+    showToothBrush();
     splashIsUp = false;
     clearInterval(textTimer);
     splashText.destroy();
@@ -236,7 +243,7 @@ function cleanTooth(){
   }
 }
 
-var playWinMusic = true;
+var doOnce = true;
 function checkForWin(){
   var cavityCount = 0;
   var totalHealthy = teeth.length;
@@ -250,20 +257,26 @@ function checkForWin(){
     teeth.next();
   }
   if (cavityCount >= MAX_CAVITIES ){
-    finalText.text = "Take better care of your teeth!"
-    restartText.visible = true;
-    if(playWinMusic){
+    if(doOnce){
+      doOnce = false;
+
+      showFinalText();
+      finalText.text = "Take better care of your teeth!"
+      restartText.visible = true;
+
       game.sound.remove('bgMusic');
       game.sound.play('winGameSound');
-      playWinMusic = false;
     }
   } else if(totalHealthy + cavityCount == teeth.length){
-    finalText.text = 'All Clean!'
-    restartText.visible = true;
-    if(playWinMusic){
+    if(doOnce){
+      doOnce = false;
+
+      showFinalText();
+      finalText.text = 'All Clean!'
+      restartText.visible = true;
+
       game.sound.remove('bgMusic');
       game.sound.play('winGameSound');
-      playWinMusic = false;
     }
   } else {
     return;
@@ -278,4 +291,18 @@ function checkForWin(){
     clearInterval(toothTimers[timerIndex]);
   }
   toothTimers = [];
+  //look for restart
+  if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)){
+    resetGame();
+  }
+}
+
+function resetGame(){
+  teeth.destroy(true, false);
+  teeth = game.add.group()
+  toothbrush.destroy();
+  showSplashScreen();
+  finalText.destroy();
+  restartText.destroy();
+  doOnce = true;
 }
