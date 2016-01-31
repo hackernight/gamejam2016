@@ -9,7 +9,7 @@ var DECAY_TIME = 35000;
 var MAX_CAVITIES = 2;
 
 var game = new Phaser.Game(896, 640, Phaser.AUTO, 'game', { preload: preload, create: create, update: update });
-var Teeth, downGums, gumBlocks;
+var teeth, downGums, gumBlocks;
 var mouse;
 var toothTimers = [], toothStartTimers = [];
 function preload() {
@@ -36,7 +36,8 @@ function preload() {
 }
 
 var toothbrush;
-var winningText;
+var finalText;
+var restartText;
 var brushingSound;
 var muteCleanToothSound;
 var splashIsUp = true;
@@ -72,8 +73,13 @@ function create() {
     splashText.visible = !splashText.visible;
   }, 500);
 
-  winningText = game.add.text(0, 0, '', { fontSize: '50px', fill: '#FFF', stroke: '#000', strokeThickness: 6 , boundsAlignV: 'middle', boundsAlignH: 'center'})
-  winningText.setTextBounds(0, 250 , 896, 100);
+  finalText = game.add.text(0, 0, '', { fontSize: '50px', fill: '#FFF', stroke: '#000', strokeThickness: 6 , boundsAlignV: 'middle', boundsAlignH: 'center'})
+  finalText.setTextBounds(0, 250 , 896, 100);
+
+  restartText = game.add.text(0, 0, 'Click to restart!', { fontSize: '30px', fill: '#FFF', stroke: '#000', strokeThickness: 6 , boundsAlignV: 'middle', boundsAlignH: 'center'})
+  restartText.setTextBounds(0, 350 , 896, 100);
+  restartText.visible = false;
+
 }
 
 var frame = 0;
@@ -108,9 +114,7 @@ function checkForGameStart(){
 function initGroups(game){
   gumBlocks = game.add.group();
   downGums = game.add.group();
-  Teeth = game.add.group();
-  sadTeeth = game.add.group();
-  hurtTeeth = game.add.group();
+  teeth = game.add.group();
 }
 
 function generateTopTeeth(){
@@ -130,7 +134,7 @@ function generateToothRow(scale, y){
     }
     var gum = downGums.create(getGridPixel(2+i), y, 'gums');
     gum.scale.y = scale;
-    var sprite = Teeth.create(getGridPixel(2 + i), y, 'happyTooth');
+    var sprite = teeth.create(getGridPixel(2 + i), y, 'happyTooth');
     sprite.animations.add('dance', [0,1,2,3], 10, true);
     var theTooth = toothFactory();
     sprite.tooth = theTooth;
@@ -155,10 +159,10 @@ function getGridPixel( gridNumber) {
 }
 
 function animateTeeth(){
-  for (var i=0; i<Teeth.length; i++){
-    updateToothSprite(Teeth.cursor)
-    Teeth.cursor.play('dance');
-    Teeth.next();
+  for (var i=0; i<teeth.length; i++){
+    updateToothSprite(teeth.cursor)
+    teeth.cursor.play('dance');
+    teeth.next();
   }
 }
 
@@ -209,13 +213,13 @@ function cleanTooth(){
   //loop through the teeth, are we on top of them?
   if (game.input.mousePointer.isDown){
     var inTooth = false;
-    for (var i = 0; i<Teeth.length; i++){
-      if (Phaser.Rectangle.intersects(brushArea, Teeth.cursor.getBounds())) {
+    for (var i = 0; i<teeth.length; i++){
+      if (Phaser.Rectangle.intersects(brushArea, teeth.cursor.getBounds())) {
         inTooth = true;
-        Teeth.cursor.tooth.brush()
+        teeth.cursor.tooth.brush()
         break; //stop if we found one since it's only 1 pointer.
       }
-      Teeth.next();
+      teeth.next();
     }
     if(inTooth){
       toothbrush.animations.play('brush');
@@ -232,26 +236,35 @@ function cleanTooth(){
   }
 }
 
+var playWinMusic = true;
 function checkForWin(){
   var cavityCount = 0;
-  var totalHealthy = Teeth.length;
-  for(var i=0; i<Teeth.length; i++){
-    if (Teeth.cursor.tooth.state == CAVITY){
+  var totalHealthy = teeth.length;
+  for(var i=0; i<teeth.length; i++){
+    if (teeth.cursor.tooth.state == CAVITY){
       cavityCount += 1;
     }
-    if(Teeth.cursor.tooth.state != CLEAN){
+    if(teeth.cursor.tooth.state != CLEAN){
       totalHealthy -= 1;
     }
-    Teeth.next();
+    teeth.next();
   }
   if (cavityCount >= MAX_CAVITIES ){
-    winningText.text = "Take better care of your teeth!"
-    //game.sound.remove('bgMusic');
-    //game.sound.play('winGameSound');
-  } else if(totalHealthy + cavityCount == Teeth.length){
-    winningText.text = 'All Clean!'
-    //game.sound.remove('bgMusic');
-    //game.sound.play('winGameSound');
+    finalText.text = "Take better care of your teeth!"
+    restartText.visible = true;
+    if(playWinMusic){
+      game.sound.remove('bgMusic');
+      game.sound.play('winGameSound');
+      playWinMusic = false;
+    }
+  } else if(totalHealthy + cavityCount == teeth.length){
+    finalText.text = 'All Clean!'
+    restartText.visible = true;
+    if(playWinMusic){
+      game.sound.remove('bgMusic');
+      game.sound.play('winGameSound');
+      playWinMusic = false;
+    }
   } else {
     return;
   }
