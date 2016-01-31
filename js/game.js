@@ -65,7 +65,7 @@ function create() {
   splash = game.add.sprite(0,0, 'splash');
   splash.animations.add('run', [0,1,2,3], 6, true);
   splashText = game.add.text(0,0, 'Click To Start...', {fontSize:'30px', fill:'#FFF', stroke: '#000', strokeThickness:6, boundsAlignV:'middle', boundsAlignH:'center'});
-  splashText.setTextBounds(0, 235, 896, 100);
+  splashText.setTextBounds(0, 225, 896, 100);
   textTimer = setInterval(function(){
     splashText.visible = !splashText.visible;
   }, 500);
