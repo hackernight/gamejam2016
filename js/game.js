@@ -3,13 +3,13 @@ var GRID_X_MAX = 14;
 var TILE_SIZE = 64;
 var TOOTH_FRAMES = 4;
 var TOP_TOOTH_Y = getGridPixel(4);
-var BOTTOM_TOOTH_Y = getGridPixel(7);
+var BOTTOM_TOOTH_Y = getGridPixel(6);
 var FLIPPED=-1,STANDARD=1;
 var DECAY_TIME = 35000;
 var MAX_CAVITIES = 2;
 
 var game = new Phaser.Game(896, 640, Phaser.AUTO, 'game', { preload: preload, create: create, update: update });
-var Teeth, downGums, upGums;
+var Teeth, downGums, gumBlocks;
 var mouse;
 var toothTimers = [], toothStartTimers = [];
 function preload() {
@@ -20,6 +20,9 @@ function preload() {
   game.load.spritesheet('cavityTooth', 'assets/cavityTooth.png', TILE_SIZE, TILE_SIZE);
   game.load.spritesheet('toothbrush', 'assets/toothBrush.png', TILE_SIZE, TILE_SIZE);
   game.load.image('gums', 'assets/gums.png');
+  game.load.image('gumBlock', 'assets/gumTile.png');
+  game.load.image('topLip', 'assets/topLips.png');
+  game.load.image('bottomLip', 'assets/bottomLips.png');
   game.load.image('bg', 'assets/background.png');
   game.load.image('realBg', 'assets/realBackground.png');
 
@@ -47,9 +50,12 @@ function create() {
   generateBottomTeeth();
   game.sound.play('levelStartSound');
 
+  game.add.sprite(0, 0, 'topLip');
+  game.add.sprite(0, getGridPixel(6) + 36, 'bottomLip');
+
   //toothbrush is on the top of it all, so it shoudl be last.
   toothbrush = game.add.sprite(0, 0, 'toothbrush');
-  toothbrush.animations.add('brush', [0, 1, 2, 3, 4, 5, 6, 7], 4, true);
+  toothbrush.animations.add('brush', [0, 1, 2, 3, 4, 5, 6, 7], 10, true);
 
   winningText = game.add.text(game.width / 2 - 128, (game.height / 2) - 64, '', { fontSize: '50px', fill: '#FFF', stroke: '#000', strokeThickness: 6 })
 
@@ -65,7 +71,7 @@ function update() {
 }
 
 function initGroups(game){
-  upGums = game.add.group();
+  gumBlocks = game.add.group();
   downGums = game.add.group();
   Teeth = game.add.group();
   sadTeeth = game.add.group();
@@ -82,6 +88,11 @@ function generateBottomTeeth(){
 
 function generateToothRow(scale, y){
   for(var i=0; i < 10; i++){
+    if(scale == FLIPPED){
+      var gumBlock = gumBlocks.create(getGridPixel(2+i), y - 128 , 'gumBlock');
+    } else {
+      var gumBlock = gumBlocks.create(getGridPixel(2+i), y + 64, 'gumBlock');
+    }
     var gum = downGums.create(getGridPixel(2+i), y, 'gums');
     gum.scale.y = scale;
     var sprite = Teeth.create(getGridPixel(2 + i), y, 'happyTooth');
