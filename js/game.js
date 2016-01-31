@@ -41,7 +41,6 @@ function create() {
   brushingSound.loop = true;
   brushingSound.play();
   brushingSound.pause();
-  brushingSound.volume = 0.7;
 
   muteCleanToothSound = true;
 
@@ -52,7 +51,6 @@ function create() {
   game.sound.play('levelStartSound');
   animateTeeth();
 
-console.log("loading is done!");
   muteCleanToothSound = false;
 
   //toothbrush is on the top of it all, so it shoudl be last.
@@ -123,7 +121,6 @@ function animateTeeth(){
 }
 
 function updateToothSprite(sprite) {
-  console.log("updating sprite; mute var is ", muteCleanToothSound);
   if(sprite.tooth.refresh){
       sprite.tooth.refresh = false;
       sprite.animations.stop('dance');
