@@ -152,10 +152,10 @@ function cleanTooth(){
   //get the bounding box of the toothbrush sprite, and shrink it to fit the
   //  area of the actual sprite
   var brushArea = toothbrush.getBounds();
-  brushArea.y = brushArea.y + 22;
-  brushArea.height = 20;
-  brushArea.x = brushArea.x + 22;
-  brushArea.width = 20;
+  brushArea.y = brushArea.y + 15;
+  brushArea.height = 1;
+  brushArea.x = brushArea.x + 15;
+  brushArea.width = 1;
 
   //loop through the teeth, are we on top of them?
   if (game.input.mousePointer.isDown){
