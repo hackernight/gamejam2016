@@ -48,10 +48,7 @@ var textTimer; //Blinking 'Press Start' timer.
 var levelList; //List of level jsons to load
 var levelIndex = 0; //The current level
 
-BrushieBrushie.AssetLoader = function(game) {
-  //init globals for the state here
-  //this.
-}
+BrushieBrushie.AssetLoader = function(game) {};
 
 BrushieBrushie.AssetLoader.prototype = {
   preload: function(){
@@ -68,9 +65,7 @@ BrushieBrushie.AssetLoader.prototype = {
   }
 };
 
-BrushieBrushie.Main = function(game){
-
-};
+BrushieBrushie.Main = function(game){};
 
 BrushieBrushie.Main.prototype = {
   preload: preload,
@@ -136,7 +131,7 @@ function update() {
     cleanTooth();
     checkForWin();
     if(game.input.keyboard.isDown(Phaser.Keyboard.ESC)){
-      resetGame();
+      resetGame(true);
     }
   } else {
     splash.animations.play('run');
@@ -178,9 +173,6 @@ function showSplashScreen(){
 
   muteText = game.add.text(0,0, 'press \'M\' at any time to mute', {fontSize:'15px', fill:'#888', boundsAlignV:'middle', boundsAlignH:'right'});
   muteText.setTextBounds(0, 600, 896, 40);
-
-  loadingText = game.add.text(0,0, 'Loading levels...' ,{fontSize:'20px', fill:'#FFF', stroke: '#000', strokeThickness:6, boundsAlignV:'middle', boundsAlignH:'center'});
-  loadingText.setTextBounds(0, 560, 896, 100);
 }
 
 function showToothBrush(){
@@ -190,10 +182,12 @@ function showToothBrush(){
 }
 
 function showFinalText(){
+  var instructions = level.nextLevel == 'end' ? 'Space to restart!': 'Press space to go to the next level.';
+
   finalText = game.add.text(0, 0, '', { fontSize: '50px', fill: '#FFF', stroke: '#000', strokeThickness: 6 , boundsAlignV: 'middle', boundsAlignH: 'center'})
   finalText.setTextBounds(0, 250 , 896, 100);
 
-  restartText = game.add.text(0, 0, 'Space to restart!', { fontSize: '30px', fill: '#FFF', stroke: '#000', strokeThickness: 6 , boundsAlignV: 'middle', boundsAlignH: 'center'})
+  restartText = game.add.text(0, 0, instructions, { fontSize: '30px', fill: '#FFF', stroke: '#000', strokeThickness: 6 , boundsAlignV: 'middle', boundsAlignH: 'center'})
   restartText.setTextBounds(0, 350 , 896, 100);
   restartText.visible = false;
 }
@@ -386,7 +380,8 @@ function checkForWin(){
       doOnce = false;
 
       showFinalText();
-      finalText.text = 'All Clean!'
+      var endText = level.nextLevel == 'end' ? 'You\'ve cleaned all the teeth!' : 'All Clean';
+      finalText.text = endText;
       restartText.visible = true;
 
       game.sound.remove('bgMusic');
@@ -406,16 +401,34 @@ function checkForWin(){
   }
   toothTimers = [];
   //look for restart
+  if(game.input.keyboard.isDown(Phaser.Keyboard.ESC)){
+    resetGame(true);
+    return;
+  }
   if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) || game.input.keyboard.isDown(Phaser.Keyboard.ESC)){
-    resetGame();
+    if(level.nextLevel != 'end'){
+      resetGame(false);
+      return;
+    } else {
+      resetGame(true);
+      return;
+    }
   }
 }
 
-function resetGame(){
+function resetGame(showSplash){
+  console.log('Level index! ', levelIndex);
   teeth.destroy(true, false);
   teeth = game.add.group()
   toothbrush.destroy();
-  showSplashScreen();
+  if(showSplash){
+    showSplashScreen();
+    levelIndex = 0;
+    console.log('reset level index: ', levelIndex);
+  } else {
+    splashIsUp = false;
+    startLevel();
+  }
   if(finalText !== undefined){
     finalText.destroy();
   }
