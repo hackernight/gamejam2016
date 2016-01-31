@@ -209,12 +209,11 @@ function showToothBrush(){
 }
 
 function showFinalText(){
-  var instructions = level.nextLevel == 'end' ? 'Space to restart!': 'Press space to go to the next level.';
 
   finalText = game.add.text(0, 0, '', { fontSize: '50px', fill: '#FFF', stroke: '#000', strokeThickness: 6 , boundsAlignV: 'middle', boundsAlignH: 'center'})
   finalText.setTextBounds(0, 250 , 896, 100);
 
-  restartText = game.add.text(0, 0, instructions, { fontSize: '30px', fill: '#FFF', stroke: '#000', strokeThickness: 6 , boundsAlignV: 'middle', boundsAlignH: 'center'})
+  restartText = game.add.text(0, 0, '', { fontSize: '30px', fill: '#FFF', stroke: '#000', strokeThickness: 6 , boundsAlignV: 'middle', boundsAlignH: 'center'})
   restartText.setTextBounds(0, 350 , 896, 100);
   restartText.visible = false;
 }
@@ -400,7 +399,8 @@ function checkForWin(){
       doOnce = false;
 
       showFinalText();
-      finalText.text = "Take better care of your teeth!"
+      finalText.text = "Take better care of your teeth!";
+      restartText.text = "Space to restart!";
       restartText.visible = true;
 
       //game.sound.pause('bgMusic');
@@ -414,6 +414,8 @@ function checkForWin(){
       showFinalText();
       var endText = level.nextLevel == 'end' ? 'You\'ve cleaned all the teeth!' : 'All Clean';
       finalText.text = endText;
+      var instructions = level.nextLevel == 'end' ? 'Space to restart!': 'Press space to go to the next level.';
+      restartText.text = instructions;
       restartText.visible = true;
 
       //game.sound.pause('bgMusic');
