@@ -1,3 +1,7 @@
+var BrushieBrushie = {
+  levels: []
+};
+
 var GRID_Y_MAX = 10;
 var GRID_X_MAX = 14;
 var TILE_SIZE = 64;
@@ -44,8 +48,35 @@ var textTimer; //Blinking 'Press Start' timer.
 var levelList; //List of level jsons to load
 var levelIndex = 0; //The current level
 
-//The game.
-var game = new Phaser.Game(896, 640, Phaser.AUTO, 'game', { preload: preload, create: create, update: update });
+BrushieBrushie.AssetLoader = function(game) {
+  //init globals for the state here
+  //this.
+}
+
+BrushieBrushie.AssetLoader.prototype = {
+  preload: function(){
+    this.game.load.json('levels', 'assets/levels/levels.json');
+  },
+  create: function(){
+    var levels = this.game.cache.getJSON('levels').levels;
+    for(level in levels){
+      BrushieBrushie.levels.push(levels[level]);
+    }
+  },
+  update: function(){
+    this.state.start('main');
+  }
+};
+
+BrushieBrushie.Main = function(game){
+
+};
+
+BrushieBrushie.Main.prototype = {
+  preload: preload,
+  create:create,
+  update:update
+};
 
 function preload() {
   game.load.spritesheet('happyTooth', 'assets/happyTooth.png', TILE_SIZE, TILE_SIZE);
@@ -125,17 +156,10 @@ function checkForMute(){
 }
 
 function loadLevels(){
-  game.load.json('levels', 'assets/levels/levels.json');
-  var interval = setInterval(function(){
-    if(game.cache.checkJSONKey('levels') && loadingText !== undefined){
-      clearInterval(interval);
-      levelList = game.cache.getJSON('levels').levels;
-      for(var level in levelList){
-        game.load.json(level, 'assets/levels/'+level);
-      }
-      loadingText.destroy();
-    }
-  }, 100);
+  levelList = BrushieBrushie.levels;
+  for(var level in levelList){
+    game.load.json(levelList[level], 'assets/levels/'+levelList[level]);
+  }
 }
 
 function showSplashScreen(){
@@ -400,3 +424,9 @@ function resetGame(){
   }
   doOnce = true;
 }
+
+//The game.
+var game = new Phaser.Game(896, 640, Phaser.AUTO, 'game');
+game.state.add('loading', BrushieBrushie.AssetLoader);
+game.state.add('main', BrushieBrushie.Main);
+game.state.start('loading');
