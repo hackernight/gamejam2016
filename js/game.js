@@ -185,9 +185,10 @@ function loadSounds() {
   BrushieBrushie.sounds.onCavity = ['ouchie', 'ouchie2'];
 }
 
-function getRandomSound(soundArray) {
+function playRandomSound(soundArray) {
   var arrayIndex = Math.floor(Math.random() * soundArray.length);
-  return soundArray[arrayIndex];
+  var randomSound = soundArray[arrayIndex];
+  game.sound.play(randomSound);
 }
 
 function showSplashScreen(){
@@ -241,7 +242,7 @@ function startLevel(){
   var brushesPerStage = level.brushesPerStage ? level.brushesPerStage : BRUSHES_PER_STAGE_DEFAULT;
   generateTopTeeth(level.top, brushesPerStage);
   generateBottomTeeth(level.bottom, brushesPerStage);
-  game.sound.play(getRandomSound(BrushieBrushie.sounds.onLevelStart));
+  playRandomSound(BrushieBrushie.sounds.onLevelStart);;
   animateTeeth();
   muteCleanToothSound = false;
   showToothBrush();
@@ -318,7 +319,7 @@ function updateToothSprite(sprite) {
       case CLEAN :
           sprite.loadTexture('happyTooth',0);
           if (!muteCleanToothSound) {
-            game.sound.play(getRandomSound(BrushieBrushie.sounds.onToothClean));
+            playRandomSound(BrushieBrushie.sounds.onToothClean);;
           }
           break;
       case DIRTY :
@@ -329,12 +330,12 @@ function updateToothSprite(sprite) {
           break;
       case DIRTIEST :
           sprite.loadTexture('saddestTooth',0);
-          game.sound.play(getRandomSound(BrushieBrushie.sounds.onNearCavity));
+          playRandomSound(BrushieBrushie.sounds.onNearCavity);;
 
           break;
       default :
           sprite.loadTexture('cavityTooth',0);
-          game.sound.play(getRandomSound(BrushieBrushie.sounds.onCavity));
+          playRandomSound(BrushieBrushie.sounds.onCavity);;
 
       }
       sprite.animations.add('dance', [0,1,2,3], 10, true);
@@ -411,7 +412,7 @@ function checkForWin(){
       lost = true;
       //game.sound.pause('bgMusic');
       //game.sound.play('loseGameSound');
-      game.sound.play(getRandomSound(BrushieBrushie.sounds.onLose));
+      playRandomSound(BrushieBrushie.sounds.onLose);;
     }
   } else if(totalHealthy + cavityCount == teeth.length){
     if(doOnce){
