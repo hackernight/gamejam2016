@@ -82,22 +82,8 @@ BrushieBrushie.Main.prototype = {
 };
 
 function preload() {
-  game.load.spritesheet('happyTooth', 'assets/graphics/happyTooth.png', TILE_SIZE, TILE_SIZE);
-  game.load.spritesheet('sadTooth', 'assets/graphics/sadTooth.png', TILE_SIZE, TILE_SIZE);
-  game.load.spritesheet('sadderTooth', 'assets/graphics/sadderTooth.png', TILE_SIZE, TILE_SIZE);
-  game.load.spritesheet('saddestTooth', 'assets/graphics/saddestTooth.png', TILE_SIZE, TILE_SIZE);
-  game.load.spritesheet('cavityTooth', 'assets/graphics/cavityTooth.png', TILE_SIZE, TILE_SIZE);
-  game.load.spritesheet('toothbrush', 'assets/graphics/toothBrush.png', TILE_SIZE, TILE_SIZE);
-  game.load.spritesheet('splash', 'assets/graphics/splashScreen.png', 896, 640);
-  game.load.spritesheet('title', 'assets/graphics/title.png', 896, 640);
-  game.load.image('gums', 'assets/graphics/gums.png');
-  game.load.image('gumBlock', 'assets/graphics/gumTile.png');
-  game.load.image('topLip', 'assets/graphics/topLips.png');
-  game.load.image('bottomLip', 'assets/graphics/bottomLips.png');
-  game.load.image('bg', 'assets/graphics/background.png');
-  game.load.image('realBg', 'assets/graphics/realBackground.png');
-  game.load.image('redOverlay', 'assets/graphics/redOverlay.png');
-
+  loadSpriteSheets();
+  loadImages();
   loadSounds();
   loadLevels();
 }
@@ -151,11 +137,25 @@ function checkForMute(){
   }
 }
 
-function loadLevels(){
-  levelList = BrushieBrushie.levels;
-  for(var level in levelList){
-    game.load.json(levelList[level], 'assets/levels/'+levelList[level]);
-  }
+function loadSpriteSheets() {
+  game.load.spritesheet('happyTooth', 'assets/graphics/happyTooth.png', TILE_SIZE, TILE_SIZE);
+  game.load.spritesheet('sadTooth', 'assets/graphics/sadTooth.png', TILE_SIZE, TILE_SIZE);
+  game.load.spritesheet('sadderTooth', 'assets/graphics/sadderTooth.png', TILE_SIZE, TILE_SIZE);
+  game.load.spritesheet('saddestTooth', 'assets/graphics/saddestTooth.png', TILE_SIZE, TILE_SIZE);
+  game.load.spritesheet('cavityTooth', 'assets/graphics/cavityTooth.png', TILE_SIZE, TILE_SIZE);
+  game.load.spritesheet('toothbrush', 'assets/graphics/toothBrush.png', TILE_SIZE, TILE_SIZE);
+  game.load.spritesheet('splash', 'assets/graphics/splashScreen.png', 896, 640);
+  game.load.spritesheet('title', 'assets/graphics/title.png', 896, 640);
+}
+
+function loadImages() {
+  game.load.image('gums', 'assets/graphics/gums.png');
+  game.load.image('gumBlock', 'assets/graphics/gumTile.png');
+  game.load.image('topLip', 'assets/graphics/topLips.png');
+  game.load.image('bottomLip', 'assets/graphics/bottomLips.png');
+  game.load.image('bg', 'assets/graphics/background.png');
+  game.load.image('realBg', 'assets/graphics/realBackground.png');
+  game.load.image('redOverlay', 'assets/graphics/redOverlay.png');
 }
 
 function loadSounds() {
@@ -183,6 +183,13 @@ function loadSounds() {
   BrushieBrushie.sounds.onLevelStart = ['levelStartSound', 'levelStartSound2', 'levelStartSound3', 'levelStartSound4'];
   BrushieBrushie.sounds.onNearCavity = ['gettingDirtier', 'gettingDirtier2', 'gettingDirtier3'];
   BrushieBrushie.sounds.onCavity = ['ouchie', 'ouchie2'];
+}
+
+function loadLevels(){
+  levelList = BrushieBrushie.levels;
+  for(var level in levelList){
+    game.load.json(levelList[level], 'assets/levels/'+levelList[level]);
+  }
 }
 
 function playRandomSound(soundArray) {
