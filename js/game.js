@@ -80,21 +80,21 @@ BrushieBrushie.Main.prototype = {
 };
 
 function preload() {
-  game.load.spritesheet('happyTooth', 'assets/happyTooth.png', TILE_SIZE, TILE_SIZE);
-  game.load.spritesheet('sadTooth', 'assets/sadTooth.png', TILE_SIZE, TILE_SIZE);
-  game.load.spritesheet('sadderTooth', 'assets/sadderTooth.png', TILE_SIZE, TILE_SIZE);
-  game.load.spritesheet('saddestTooth', 'assets/saddestTooth.png', TILE_SIZE, TILE_SIZE);
-  game.load.spritesheet('cavityTooth', 'assets/cavityTooth.png', TILE_SIZE, TILE_SIZE);
-  game.load.spritesheet('toothbrush', 'assets/toothBrush.png', TILE_SIZE, TILE_SIZE);
-  game.load.spritesheet('splash', 'assets/splashScreen.png', 896, 640);
-  game.load.spritesheet('title', 'assets/title.png', 896, 640);
-  game.load.image('gums', 'assets/gums.png');
-  game.load.image('gumBlock', 'assets/gumTile.png');
-  game.load.image('topLip', 'assets/topLips.png');
-  game.load.image('bottomLip', 'assets/bottomLips.png');
-  game.load.image('bg', 'assets/background.png');
-  game.load.image('realBg', 'assets/realBackground.png');
-  game.load.image('redOverlay', 'assets/redOverlay.png');
+  game.load.spritesheet('happyTooth', 'assets/graphics/happyTooth.png', TILE_SIZE, TILE_SIZE);
+  game.load.spritesheet('sadTooth', 'assets/graphics/sadTooth.png', TILE_SIZE, TILE_SIZE);
+  game.load.spritesheet('sadderTooth', 'assets/graphics/sadderTooth.png', TILE_SIZE, TILE_SIZE);
+  game.load.spritesheet('saddestTooth', 'assets/graphics/saddestTooth.png', TILE_SIZE, TILE_SIZE);
+  game.load.spritesheet('cavityTooth', 'assets/graphics/cavityTooth.png', TILE_SIZE, TILE_SIZE);
+  game.load.spritesheet('toothbrush', 'assets/graphics/toothBrush.png', TILE_SIZE, TILE_SIZE);
+  game.load.spritesheet('splash', 'assets/graphics/splashScreen.png', 896, 640);
+  game.load.spritesheet('title', 'assets/graphics/title.png', 896, 640);
+  game.load.image('gums', 'assets/graphics/gums.png');
+  game.load.image('gumBlock', 'assets/graphics/gumTile.png');
+  game.load.image('topLip', 'assets/graphics/topLips.png');
+  game.load.image('bottomLip', 'assets/graphics/bottomLips.png');
+  game.load.image('bg', 'assets/graphics/background.png');
+  game.load.image('realBg', 'assets/graphics/realBackground.png');
+  game.load.image('redOverlay', 'assets/graphics/redOverlay.png');
 
   game.load.audio('brushingSound', 'assets/Sounds/brushSound.ogg');
   game.load.audio('levelStartSound', 'assets/Sounds/startLevel.ogg');
