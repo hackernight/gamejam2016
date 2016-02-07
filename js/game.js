@@ -96,24 +96,24 @@ function preload() {
   game.load.image('realBg', 'assets/graphics/realBackground.png');
   game.load.image('redOverlay', 'assets/graphics/redOverlay.png');
 
-  game.load.audio('brushingSound', 'assets/Sounds/brushSound.ogg');
-  game.load.audio('levelStartSound', 'assets/Sounds/startLevel.ogg');
-  game.load.audio('levelStartSound2', 'assets/Sounds/twiceADay.ogg');
-  game.load.audio('levelStartSound3', 'assets/Sounds/iKnowYouDontWantToButItsGoodForYou.ogg');
-  game.load.audio('levelStartSound4', 'assets/Sounds/whatALovelySmile.ogg');
-  game.load.audio('cleanToothSound', 'assets/Sounds/cleanTooth.ogg');
-  game.load.audio('yippee', 'assets/Sounds/yipee2.ogg');
-  game.load.audio('waHoo', 'assets/Sounds/waHoo2.ogg');
-  game.load.audio('bgMusic', 'assets/Sounds/ukeleleTake2.ogg');
-  game.load.audio('winGameSound', 'assets/Sounds/yayyy.ogg');
-  game.load.audio('loseGameSound', 'assets/Sounds/denturesItIs.ogg');
-  game.load.audio('loseGameSound2', 'assets/Sounds/iCantHelpYou2.ogg');
-  game.load.audio('loseGameSound3', 'assets/Sounds/lookOnTheBrightSide.ogg');
-  game.load.audio('gettingDirtier', 'assets/Sounds/gettingDirtier.ogg');
-  game.load.audio('gettingDirtier2', 'assets/Sounds/helpMe2.ogg');
-  game.load.audio('gettingDirtier3', 'assets/Sounds/ohGross3.ogg');
-  game.load.audio('ouchie', 'assets/Sounds/ouchie.ogg');
-  game.load.audio('ouchie2', 'assets/Sounds/noooo.ogg');
+  game.load.audio('brushingSound', 'assets/sounds/brushSound.ogg');
+  game.load.audio('levelStartSound', 'assets/sounds/startLevel.ogg');
+  game.load.audio('levelStartSound2', 'assets/sounds/twiceADay.ogg');
+  game.load.audio('levelStartSound3', 'assets/sounds/iKnowYouDontWantToButItsGoodForYou.ogg');
+  game.load.audio('levelStartSound4', 'assets/sounds/whatALovelySmile.ogg');
+  game.load.audio('cleanToothSound', 'assets/sounds/cleanTooth.ogg');
+  game.load.audio('yippee', 'assets/sounds/yipee2.ogg');
+  game.load.audio('waHoo', 'assets/sounds/waHoo2.ogg');
+  game.load.audio('bgMusic', 'assets/sounds/ukeleleTake2.ogg');
+  game.load.audio('winGameSound', 'assets/sounds/yayyy.ogg');
+  game.load.audio('loseGameSound', 'assets/sounds/denturesItIs.ogg');
+  game.load.audio('loseGameSound2', 'assets/sounds/iCantHelpYou2.ogg');
+  game.load.audio('loseGameSound3', 'assets/sounds/lookOnTheBrightSide.ogg');
+  game.load.audio('gettingDirtier', 'assets/sounds/gettingDirtier.ogg');
+  game.load.audio('gettingDirtier2', 'assets/sounds/helpMe2.ogg');
+  game.load.audio('gettingDirtier3', 'assets/sounds/ohGross3.ogg');
+  game.load.audio('ouchie', 'assets/sounds/ouchie.ogg');
+  game.load.audio('ouchie2', 'assets/sounds/noooo.ogg');
 
   loadLevels();
 }
