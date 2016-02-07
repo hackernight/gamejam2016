@@ -1,5 +1,12 @@
 var BrushieBrushie = {
-  levels: []
+  levels: [],
+  sounds: {
+    onLose: [], //sounds that we play when you lose
+    onToothClean: [], //sounds for when teeth become clean
+    onLevelStart: [], //sounds to play when the level begins
+    onNearCavity: [], //sounds to play when we almost have a cavity
+    onCavity: [] //sounds when we have a cavity
+  }
 };
 
 var GRID_Y_MAX = 10;
@@ -47,11 +54,6 @@ var quietM = false; //Used to 'debounce' the mute button
 var textTimer; //Blinking 'Press Start' timer.
 var levelList; //List of level jsons to load
 var levelIndex = 0; //The current level
-var losingSounds = []; //sounds that we play when you lose
-var cleanToothSounds = []; //sounds for when teeth become clean
-var levelStartSounds = []; //sounds to play when the level begins
-var gettingDirtierSounds = []; //sounds to play when we almost have a cavity
-var cavitySounds = []; //sounds when we have a cavity
 var lost = false;
 
 BrushieBrushie.AssetLoader = function(game) {};
@@ -176,11 +178,11 @@ function loadSounds() {
   game.load.audio('ouchie', 'assets/sounds/ouchie.ogg');
   game.load.audio('ouchie2', 'assets/sounds/noooo.ogg');
 
-  losingSounds = ['loseGameSound', 'loseGameSound2', 'loseGameSound3'];
-  cleanToothSounds = ['cleanToothSound', 'yippee', 'waHoo'];
-  levelStartSounds = ['levelStartSound', 'levelStartSound2', 'levelStartSound3', 'levelStartSound4'];
-  gettingDirtierSounds = ['gettingDirtier', 'gettingDirtier2', 'gettingDirtier3'];
-  cavitySounds = ['ouchie', 'ouchie2'];
+  BrushieBrushie.sounds.onLose = ['loseGameSound', 'loseGameSound2', 'loseGameSound3'];
+  BrushieBrushie.sounds.onToothClean = ['cleanToothSound', 'yippee', 'waHoo'];
+  BrushieBrushie.sounds.onLevelStart = ['levelStartSound', 'levelStartSound2', 'levelStartSound3', 'levelStartSound4'];
+  BrushieBrushie.sounds.onNearCavity = ['gettingDirtier', 'gettingDirtier2', 'gettingDirtier3'];
+  BrushieBrushie.sounds.onCavity = ['ouchie', 'ouchie2'];
 }
 
 function getRandomSound(soundArray) {
@@ -239,7 +241,7 @@ function startLevel(){
   var brushesPerStage = level.brushesPerStage ? level.brushesPerStage : BRUSHES_PER_STAGE_DEFAULT;
   generateTopTeeth(level.top, brushesPerStage);
   generateBottomTeeth(level.bottom, brushesPerStage);
-  game.sound.play(getRandomSound(levelStartSounds));
+  game.sound.play(getRandomSound(BrushieBrushie.sounds.onLevelStart));
   animateTeeth();
   muteCleanToothSound = false;
   showToothBrush();
@@ -316,7 +318,7 @@ function updateToothSprite(sprite) {
       case CLEAN :
           sprite.loadTexture('happyTooth',0);
           if (!muteCleanToothSound) {
-            game.sound.play(getRandomSound(cleanToothSounds));
+            game.sound.play(getRandomSound(BrushieBrushie.sounds.onToothClean));
           }
           break;
       case DIRTY :
@@ -327,12 +329,12 @@ function updateToothSprite(sprite) {
           break;
       case DIRTIEST :
           sprite.loadTexture('saddestTooth',0);
-          game.sound.play(getRandomSound(gettingDirtierSounds));
+          game.sound.play(getRandomSound(BrushieBrushie.sounds.onNearCavity));
 
           break;
       default :
           sprite.loadTexture('cavityTooth',0);
-          game.sound.play(getRandomSound(cavitySounds));
+          game.sound.play(getRandomSound(BrushieBrushie.sounds.onCavity));
 
       }
       sprite.animations.add('dance', [0,1,2,3], 10, true);
@@ -409,7 +411,7 @@ function checkForWin(){
       lost = true;
       //game.sound.pause('bgMusic');
       //game.sound.play('loseGameSound');
-      game.sound.play(getRandomSound(losingSounds));
+      game.sound.play(getRandomSound(BrushieBrushie.sounds.onLose));
     }
   } else if(totalHealthy + cavityCount == teeth.length){
     if(doOnce){
