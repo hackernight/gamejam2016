@@ -1,8 +1,13 @@
-var CLEAN=0, DIRTY=1, DIRTIER=2, DIRTIEST=3, CAVITY=4;
+var CLEAN = 0,
+  DIRTY = 1,
+  DIRTIER = 2,
+  DIRTIEST = 3,
+  CAVITY = 4;
 var BRUSHES_PER_STAGE_DEFAULT = 50;
 var BRUSHES_PER_STAGE_DEBUG = 5;
 var ID = 0;
-function toothFactory(brushesPerStage){
+
+function toothFactory(brushesPerStage) {
   var tooth = {};
   //initializes a random state between clean and dirty
   tooth.state = Math.floor(Math.random() * 2);
@@ -10,9 +15,9 @@ function toothFactory(brushesPerStage){
   tooth.dirtyiestCounter = 0;
   tooth.id = ID++;
   tooth.brushes = 0;
-  tooth.brush = function(){
+  tooth.brush = function() {
     tooth.brushes += 1;
-    if (this.brushes > brushesPerStage){
+    if (this.brushes > brushesPerStage) {
       this.brushes = 0;
       var oldState = this.state;
       this.state = cleanTransistion(this.state);
@@ -21,7 +26,7 @@ function toothFactory(brushesPerStage){
       }
     }
   };
-  tooth.decay = function(){
+  tooth.decay = function() {
     var oldState = this.state;
     this.state = dirtyTransition(this.state);
     if (this.state != oldState) {
@@ -33,8 +38,8 @@ function toothFactory(brushesPerStage){
   return tooth;
 }
 
-function cleanTransistion(state){
-  if (state == CLEAN){
+function cleanTransistion(state) {
+  if (state == CLEAN) {
     return CLEAN;
   }
   if (state == CAVITY) {
@@ -43,7 +48,7 @@ function cleanTransistion(state){
   return state - 1;
 }
 
-function dirtyTransition(state){
+function dirtyTransition(state) {
   if (state == CAVITY) {
     return CAVITY;
   }
