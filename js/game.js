@@ -52,7 +52,6 @@ var muteCleanToothSound; // HACK: this is to avoid instant SHINY spam
 var redOverlayLock = false; //Lock to not trigger the tween twice
 var splashIsUp = true;
 var doOnce = true; //Used for end of game stuff that needs to happen once.
-var quietM = false; //Used to 'debounce' the mute button
 var textTimer; //Blinking 'Press Start' timer.
 var levelList; //List of level jsons to load
 var levelIndex = 0; //The current level
@@ -110,10 +109,12 @@ function create() {
 
   redOverlay = game.add.sprite(0, 0, 'redOverlay');
   redOverlay.alpha = 0;
+
+  muteKey = game.input.keyboard.addKey(Phaser.Keyboard.M);
+  muteKey.onDown.add(toggleMute, this);
 }
 
 function update() {
-  checkForMute();
   if (!splashIsUp) {
     animateTeeth();
     updateToothbrushPosition();
@@ -129,14 +130,8 @@ function update() {
   }
 }
 
-function checkForMute() {
-  if (game.input.keyboard.isDown(Phaser.Keyboard.M) && !quietM) {
-    quietM = true;
-    setTimeout(function() {
-      quietM = false;
-    }, 200);
-    game.sound.mute = !game.sound.mute;
-  }
+function toggleMute() {
+  game.sound.mute = !game.sound.mute;
 }
 
 function loadSpriteSheets() {
