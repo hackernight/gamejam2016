@@ -93,7 +93,7 @@ function preload() {
 function create() {
   game.add.sprite(0, 0, 'realBg');
   game.add.sprite(0, 0, 'bg');
-  brushingSound = game.add.audio('brushingSound', .2, false);
+  brushingSound = game.add.audio('brushingSound', 0.2, false);
   brushingSound.loop = true;
   brushingSound.play();
   brushingSound.pause();
@@ -245,7 +245,7 @@ function showFinalText() {
     strokeThickness: 6,
     boundsAlignV: 'middle',
     boundsAlignH: 'center'
-  })
+  });
   finalText.setTextBounds(0, 250, 896, 100);
 
   restartText = game.add.text(0, 0, '', {
@@ -255,7 +255,7 @@ function showFinalText() {
     strokeThickness: 6,
     boundsAlignV: 'middle',
     boundsAlignH: 'center'
-  })
+  });
   restartText.setTextBounds(0, 350, 896, 100);
   restartText.visible = false;
 }
@@ -277,7 +277,7 @@ function startLevel() {
   var brushesPerStage = level.brushesPerStage ? level.brushesPerStage : BRUSHES_PER_STAGE_DEFAULT;
   generateTopTeeth(level.top, brushesPerStage);
   generateBottomTeeth(level.bottom, brushesPerStage);
-  playRandomSound(BrushieBrushie.sounds.onLevelStart);;
+  playRandomSound(BrushieBrushie.sounds.onLevelStart);
   animateTeeth();
   muteCleanToothSound = false;
   showToothBrush();
@@ -302,7 +302,7 @@ function initGroups(game) {
 }
 
 function generateTopTeeth(pattern, brushesPerStage) {
-  generateToothRow(FLIPPED, TOP_TOOTH_Y, pattern, brushesPerStage)
+  generateToothRow(FLIPPED, TOP_TOOTH_Y, pattern, brushesPerStage);
 }
 
 function generateBottomTeeth(pattern, brushesPerStage) {
@@ -329,7 +329,7 @@ function generateToothRow(scale, y, pattern, brushesPerStage) {
         toothTimers.push(
           setInterval(
             function(tooth) {
-              tooth.decay()
+              tooth.decay();
             },
             level.decayTime,
             theTooth)
@@ -346,7 +346,7 @@ function getGridPixel(gridNumber) {
 
 function animateTeeth() {
   for (var i = 0; i < teeth.length; i++) {
-    updateToothSprite(teeth.cursor)
+    updateToothSprite(teeth.cursor);
     teeth.cursor.play('dance');
     teeth.next();
   }
@@ -361,7 +361,7 @@ function updateToothSprite(sprite) {
       case CLEAN:
         sprite.loadTexture('happyTooth', 0);
         if (!muteCleanToothSound) {
-          playRandomSound(BrushieBrushie.sounds.onToothClean);;
+          playRandomSound(BrushieBrushie.sounds.onToothClean);
         }
         break;
       case DIRTY:
@@ -372,12 +372,12 @@ function updateToothSprite(sprite) {
         break;
       case DIRTIEST:
         sprite.loadTexture('saddestTooth', 0);
-        playRandomSound(BrushieBrushie.sounds.onNearCavity);;
+        playRandomSound(BrushieBrushie.sounds.onNearCavity);
 
         break;
       default:
         sprite.loadTexture('cavityTooth', 0);
-        playRandomSound(BrushieBrushie.sounds.onCavity);;
+        playRandomSound(BrushieBrushie.sounds.onCavity);
 
     }
     sprite.animations.add('dance', [0, 1, 2, 3], 10, true);
@@ -405,10 +405,10 @@ function cleanTooth() {
     for (var i = 0; i < teeth.length; i++) {
       if (Phaser.Rectangle.intersects(brushArea, teeth.cursor.getBounds())) {
         inTooth = true;
-        teeth.cursor.tooth.brush()
-        if (teeth.cursor.tooth.state == CAVITY && redOverlayLock == false) {
+        teeth.cursor.tooth.brush();
+        if (teeth.cursor.tooth.state === CAVITY && redOverlayLock === false) {
           tween = game.add.tween(redOverlay).to({
-            alpha: .5
+            alpha: 0.5
           }, 250, Phaser.Easing.Linear.None, true, 0, 0, true);
           redOverlayLock = true;
           tween.onComplete.add(function() {
@@ -456,9 +456,7 @@ function checkForWin() {
       restartText.text = "Space to restart!";
       restartText.visible = true;
       lost = true;
-      //game.sound.pause('bgMusic');
-      //game.sound.play('loseGameSound');
-      playRandomSound(BrushieBrushie.sounds.onLose);;
+      playRandomSound(BrushieBrushie.sounds.onLose);
     }
   } else if (totalHealthy + cavityCount == teeth.length) {
     if (doOnce) {
@@ -507,7 +505,7 @@ function checkForWin() {
 function resetGame(showSplash) {
   console.log('Level index! ', levelIndex);
   teeth.destroy(true, false);
-  teeth = game.add.group()
+  teeth = game.add.group();
   toothbrush.destroy();
   if (showSplash) {
     showSplashScreen();
