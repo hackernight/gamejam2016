@@ -485,14 +485,12 @@ function checkForWin() {
     resetGame(true);
     return;
   }
-  if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) || game.input.keyboard.isDown(Phaser.Keyboard.ESC)) {
+  if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
     if (!lost && level.nextLevel != 'end') {
       resetGame(false);
-      return;
     } else {
       lost = false;
       resetGame(true);
-      return;
     }
   }
 }
